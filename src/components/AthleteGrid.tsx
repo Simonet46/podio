@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { Athlete } from "@/lib/data/types";
 import { SPORT_LIST } from "@/config/sports";
 import { AthleteCard } from "./AthleteCard";
+import { Reveal } from "./Reveal";
 
 /** Grid de atletas con filtro por deporte (chips). */
 export function AthleteGrid({ athletes }: { athletes: Athlete[] }) {
@@ -41,8 +42,12 @@ export function AthleteGrid({ athletes }: { athletes: Athlete[] }) {
 
       {/* Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((a) => (
-          <AthleteCard key={a.id} athlete={a} />
+        {filtered.map((a, i) => (
+          <Reveal key={a.id} delay={(i % 3) * 90} className="h-full">
+            <div className="h-full [&>article]:h-full">
+              <AthleteCard athlete={a} />
+            </div>
+          </Reveal>
         ))}
       </div>
 

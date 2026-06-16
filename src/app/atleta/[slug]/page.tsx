@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { DonationWidget } from "@/components/DonationWidget";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Monogram } from "@/components/Monogram";
+import { Reveal } from "@/components/Reveal";
 import { getAthleteBySlug, getAthletes } from "@/lib/data/athletes";
 import { getSport } from "@/config/sports";
 import { formatMoney, progressPct } from "@/lib/money";
@@ -115,15 +116,15 @@ export default async function AthletePage({
               </div>
 
               {/* La historia */}
-              <div className="mt-8">
+              <Reveal className="mt-8">
                 <h2 className="font-display text-2xl font-600 uppercase tracking-wide text-ink">
                   La historia
                 </h2>
                 <p className="mt-3 leading-relaxed text-steel">{athlete.bio}</p>
-              </div>
+              </Reveal>
 
               {/* Tu aporte financia */}
-              <div className="mt-8">
+              <Reveal className="mt-8">
                 <h2 className="font-display text-2xl font-600 uppercase tracking-wide text-ink">
                   Tu aporte financia
                 </h2>
@@ -147,7 +148,7 @@ export default async function AthletePage({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             </div>
 
             {/* Columna derecha: widget sticky */}

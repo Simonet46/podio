@@ -18,7 +18,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Entrena en el Delta desde los 11 años. En 2025 fue subcampeona panamericana en K1 1000m y hoy pelea cada centésima para meterse en el ciclo de clasificación. Cada concentración en Europa la paga su familia: sin sponsors, rema seis días a la semana antes de ir a trabajar.",
     goal_amount: 18000,
     raised_amount: 7400,
-    photo_url: "/athletes/lucia-ferreyra.png",
+    photo_url: "/athletes/lucia-ferreyra.webp",
     stats: [
       ["#3", "Ranking nacional"],
       ["1000m", "Distancia K1"],
@@ -45,7 +45,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Empezó escalando en las paredes de Bariloche y hoy compite en el circuito sudamericano de boulder. La escalada deportiva exige viajar a muros homologados que en Argentina casi no existen: gran parte de su preparación depende de torneos en Chile y Brasil que financia con changas.",
     goal_amount: 15000,
     raised_amount: 11200,
-    photo_url: "/athletes/mateo-quispe.png",
+    photo_url: "/athletes/mateo-quispe.webp",
     stats: [
       ["#2", "Ranking sudamericano"],
       ["8a+", "Tope en lead"],
@@ -72,7 +72,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Récord argentino sub-21 en 200m mariposa. Nada dos turnos por día y estudia kinesiología en paralelo. Para sostener el nivel necesita competir afuera y acceder a un equipo de recuperación que su club no puede cubrir.",
     goal_amount: 20000,
     raised_amount: 4300,
-    photo_url: "/athletes/camila-roldan.png",
+    photo_url: "/athletes/camila-roldan.webp",
     stats: [
       ["2:09", "Mejor marca 200m"],
       ["x2", "Turnos diarios"],
@@ -99,7 +99,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Corre los 400m con vallas y viene bajando su marca temporada a temporada. El atletismo de élite se decide en milésimas y eso exige competir en circuitos europeos para sumar puntos de ranking. Hoy entrena en una pista municipal sin financiamiento.",
     goal_amount: 16000,
     raised_amount: 9800,
-    photo_url: "/athletes/tomas-aguirre.png",
+    photo_url: "/athletes/tomas-aguirre.webp",
     stats: [
       ["49.2", "Mejor marca 400v"],
       ["400m", "Prueba"],
@@ -126,7 +126,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Compite en Fórmula Kite, una de las clases más rápidas del agua. Navega en el Río de la Plata y viaja a campos de regata con viento estable en Brasil y Europa. El equipo de kite y los alas de competición se desgastan rápido y cuestan en dólares.",
     goal_amount: 22000,
     raised_amount: 13500,
-    photo_url: "/athletes/valentina-moretti.png",
+    photo_url: "/athletes/valentina-moretti.webp",
     stats: [
       ["#1", "Ranking nacional"],
       ["35kn", "Velocidad punta"],
@@ -153,7 +153,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Judoca de la categoría -73 kg, medallista en el Panamericano junior. El judo de alto rendimiento se sube al ranking mundial compitiendo en el Grand Slam y los Continental Open, todos en el exterior. Cada torneo que se pierde por costos es ranking que no suma.",
     goal_amount: 17000,
     raised_amount: 6100,
-    photo_url: "/athletes/joaquin-benitez.png",
+    photo_url: "/athletes/joaquin-benitez.webp",
     stats: [
       ["-73kg", "Categoría"],
       ["#3", "Ranking nacional"],
@@ -180,7 +180,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Rema en single scull sobre el Paraná. El remo de élite necesita botes de fibra de altísima gama y kilómetros de agua: Renata entrena al amanecer antes de la facultad y sueña con clasificar remando con un bote prestado por su club.",
     goal_amount: 21000,
     raised_amount: 8900,
-    photo_url: "/athletes/renata-silva.png",
+    photo_url: "/athletes/renata-silva.webp",
     stats: [
       ["1x", "Modalidad"],
       ["7:35", "Mejor 2000m"],
@@ -207,7 +207,7 @@ export const SEED_ATHLETES: Athlete[] = [
     bio: "Corre BMX Racing desde los 8 años. Es un deporte explosivo donde cada décima cuenta y los puntos de ranking se consiguen en las Copas del Mundo de Europa y Estados Unidos. Hoy compite con una bici que reparó él mismo y sueña con una pista de entrenamiento de nivel.",
     goal_amount: 14000,
     raised_amount: 12600,
-    photo_url: "/athletes/thiago-navarro.png",
+    photo_url: "/athletes/thiago-navarro.webp",
     stats: [
       ["#2", "Ranking nacional"],
       ["8s", "Tiempo de manga"],
