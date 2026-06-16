@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Design tokens del brief (fuente de verdad). */
+  --ink: #0a1a2f;
+  --ink-2: #0f2440;
+  --ice: #f5f8fb;
+  --paper: #ffffff;
+  --gold: #c9a227;
+  --gold-soft: #e4c76a;
+  --celeste: #6cb4e4;
+  --celeste-deep: #3e8fd0;
+  --steel: #5b6b7c;
+  --line: #e2e8ef;
+
+  /* Franja de 5 colores (acento decorativo, NO los aros olímpicos). */
+  --r-blue: #0072ce;
+  --r-yellow: #f4c300;
+  --r-black: #1a1a1a;
+  --r-green: #009f3d;
+  --r-red: #df0024;
+}
+
+@layer base {
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-oswald), "Oswald", sans-serif;
+  }
+
+  /* Foco de teclado visible (accesibilidad). */
+  :focus-visible {
+    outline: 3px solid var(--celeste);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+}
+
+@layer components {
+  /* Franja decorativa de 5 colores — barra horizontal de firma. */
+  .ribbon {
+    height: 4px;
+    width: 100%;
+    background: linear-gradient(
+      to right,
+      var(--r-blue) 0 20%,
+      var(--r-yellow) 20% 40%,
+      var(--r-black) 40% 60%,
+      var(--r-green) 60% 80%,
+      var(--r-red) 80% 100%
+    );
+  }
+
+  .ribbon-tall {
+    height: 5px;
+  }
+
+  /* Etiqueta tipo scoreboard. */
+  .eyebrow {
+    font-family: var(--font-oswald), "Oswald", sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+}
+
+/* prefers-reduced-motion: respetar (sin animaciones). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

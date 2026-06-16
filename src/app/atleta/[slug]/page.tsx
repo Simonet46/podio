@@ -1,0 +1,165 @@
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { DonationWidget } from "@/components/DonationWidget";
+import { ProgressBar } from "@/components/ProgressBar";
+import { Monogram } from "@/components/Monogram";
+import { getAthleteBySlug, getAthletes } from "@/lib/data/athletes";
+import { getSport } from "@/config/sports";
+import { formatMoney, progressPct } from "@/lib/money";
+import { SITE } from "@/config/site";
+
+export async function generateStaticParams() {
+  const athletes = await getAthletes();
+  return athletes.map((a) => ({ slug: a.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const athlete = await getAthleteBySlug(params.slug);
+  if (!athlete) return { title: SITE.brand };
+  return {
+    title: `${athlete.full_name} — ${SITE.brand}`,
+    description: `Bancá a ${athlete.full_name}, ${getSport(athlete.sport)?.label ?? athlete.sport} de ${athlete.city}, rumbo a LA 2028.`,
+  };
+}
+
+export default async function AthletePage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const athlete = await getAthleteBySlug(params.slug);
+  if (!athlete) notFound();
+
+  const sport = getSport(athlete.sport);
+  const color = sport?.color ?? "#1E6E8C";
+  const pct = progressPct(athlete.raised_amount, athlete.goal_amount);
+
+  return (
+    <>
+      <Header />
+      <main>
+        {/* ───────── Hero del atleta (color del deporte) ───────── */}
+        <section className="relative text-white" style={{ backgroundColor: color }}>
+          <div
+            className="absolute inset-0"
+            style={{ background: "linear-gradient(180deg, rgba(10,26,47,0.15), rgba(10,26,47,0.55))" }}
+            aria-hidden
+          />
+          <div className="relative mx-auto flex max-w-container flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16 md:flex-row md:items-end">
+            <div className="h-28 w-28 shrink-0 overflow-hidden rounded-xl border-2 border-white/30 sm:h-36 sm:w-36">
+              {athlete.photo_url ? (
+                <Image
+                  src={athlete.photo_url}
+                  alt={athlete.full_name}
+                  width={144}
+                  height={144}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Monogram name={athlete.full_name} color={color} className="h-full w-full" />
+              )}
+            </div>
+            <div>
+              <p className="eyebrow text-white/80">
+                {sport?.label ?? athlete.sport} · {athlete.discipline}
+              </p>
+              <h1 className="mt-2 font-display text-4xl font-700 uppercase leading-none tracking-tight sm:text-6xl">
+                {athlete.full_name}
+              </h1>
+              <p className="mt-2 text-white/85">
+                {athlete.city}, {athlete.province}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ───────── Cuerpo ───────── */}
+        <section className="bg-ice">
+          <div className="mx-auto grid max-w-container gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_380px]">
+            {/* Columna izquierda */}
+            <div>
+              {/* Fila de stats */}
+              <div className="grid grid-cols-3 gap-3">
+                {athlete.stats.map(([value, label], i) => (
+                  <div
+                    key={i}
+                    className="rounded-xl border border-line bg-paper p-4 text-center"
+                  >
+                    <div className="font-display text-2xl font-700 text-ink sm:text-3xl">
+                      {value}
+                    </div>
+                    <div className="eyebrow mt-1 text-steel">{label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Progreso */}
+              <div className="mt-6 rounded-xl border border-line bg-paper p-5">
+                <ProgressBar raised={athlete.raised_amount} goal={athlete.goal_amount} />
+                <div className="mt-3 flex items-baseline justify-between font-display">
+                  <span className="text-ink">
+                    <span className="text-xl font-700 text-celeste-deep">
+                      {formatMoney(athlete.raised_amount)}
+                    </span>{" "}
+                    <span className="text-steel">de {formatMoney(athlete.goal_amount)}</span>
+                  </span>
+                  <span className="text-xl font-700 text-gold">{pct}%</span>
+                </div>
+              </div>
+
+              {/* La historia */}
+              <div className="mt-8">
+                <h2 className="font-display text-2xl font-600 uppercase tracking-wide text-ink">
+                  La historia
+                </h2>
+                <p className="mt-3 leading-relaxed text-steel">{athlete.bio}</p>
+              </div>
+
+              {/* Tu aporte financia */}
+              <div className="mt-8">
+                <h2 className="font-display text-2xl font-600 uppercase tracking-wide text-ink">
+                  Tu aporte financia
+                </h2>
+                <ul className="mt-4 space-y-3">
+                  {athlete.fund_items.map(([title, desc], i) => (
+                    <li
+                      key={i}
+                      className="flex gap-3 rounded-xl border border-line bg-paper p-4"
+                    >
+                      <span
+                        className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: color }}
+                        aria-hidden
+                      />
+                      <div>
+                        <div className="font-display font-600 uppercase tracking-wide text-ink">
+                          {title}
+                        </div>
+                        <p className="text-sm text-steel">{desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Columna derecha: widget sticky */}
+            <aside className="lg:relative">
+              <div className="lg:sticky lg:top-24">
+                <DonationWidget athlete={athlete} />
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+      <Footer />
+    </>
+  );
+}

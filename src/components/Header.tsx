@@ -1,0 +1,55 @@
+import Link from "next/link";
+import { SITE } from "@/config/site";
+import { Ribbon } from "./Ribbon";
+import { CountdownMini } from "./Countdown";
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50">
+      <div className="bg-ink/95 backdrop-blur supports-[backdrop-filter]:bg-ink/80">
+        <div className="mx-auto flex h-16 max-w-container items-center justify-between gap-4 px-4 sm:px-6">
+          {/* Logo + tagline */}
+          <Link href="/" className="flex items-baseline gap-2.5">
+            <span className="font-display text-2xl font-700 tracking-wide text-white">
+              {SITE.brand}
+            </span>
+            <span className="eyebrow hidden text-gold sm:inline">
+              {SITE.tagline}
+            </span>
+          </Link>
+
+          {/* Nav */}
+          <nav className="hidden items-center gap-7 md:flex">
+            <Link
+              href="/#atletas"
+              className="font-display text-sm uppercase tracking-wide text-white/75 transition-colors hover:text-white"
+            >
+              Atletas
+            </Link>
+            <Link
+              href="/#como-funciona"
+              className="font-display text-sm uppercase tracking-wide text-white/75 transition-colors hover:text-white"
+            >
+              Cómo funciona
+            </Link>
+          </nav>
+
+          {/* Contador + CTA */}
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:block">
+              <CountdownMini />
+            </div>
+            <Link
+              href="/#atletas"
+              className="rounded-md bg-gold px-4 py-2 font-display text-sm font-600 uppercase tracking-wide text-ink transition-transform hover:scale-[1.03]"
+            >
+              Bancar a un atleta
+            </Link>
+          </div>
+        </div>
+      </div>
+      {/* Franja de 5 colores debajo del header */}
+      <Ribbon />
+    </header>
+  );
+}
