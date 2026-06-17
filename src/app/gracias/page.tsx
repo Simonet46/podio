@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Ribbon } from "@/components/Ribbon";
+import { Diploma } from "@/components/Diploma";
 import { SEED_ATHLETES } from "@/lib/data/seed";
 import { SEED_TEAMS } from "@/lib/data/teams";
 import { breakdown, formatMoney } from "@/lib/money";
@@ -110,6 +111,18 @@ function GraciasContent() {
             Esto es una demo: todavía no se procesa un cobro real. Próximamente,
             pagos seguros vía Stripe.
           </p>
+
+          {amount > 0 && (
+            <Diploma
+              amount={amount}
+              monthly={perMonth}
+              targetPhrase={
+                kind === "all"
+                  ? "todos los atletas argentinos"
+                  : targetName ?? "el deporte argentino"
+              }
+            />
+          )}
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             {athlete && (

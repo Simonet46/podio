@@ -29,6 +29,25 @@ export function asset(path: string): string {
 /** Comisión de plataforma. 0.07 = 7%. El resto (93%) va al atleta. */
 export const PLATFORM_FEE_RATE = 0.07;
 
+/** Niveles del diploma de apoyo según el monto del aporte (USD). */
+export type DiplomaTier = "bronce" | "plata" | "oro";
+
+export const DIPLOMA_TIERS: Record<
+  DiplomaTier,
+  { label: string; min: number; color: string; accent: string }
+> = {
+  bronce: { label: "Bronce", min: 1, color: "#C17A3F", accent: "#E0A06A" },
+  plata: { label: "Plata", min: 50, color: "#9AA6B2", accent: "#D7DEE6" },
+  oro: { label: "Oro", min: 100, color: "#C9A227", accent: "#E4C76A" },
+};
+
+/** Devuelve el nivel de diploma para un monto. */
+export function diplomaTier(amount: number): DiplomaTier {
+  if (amount >= DIPLOMA_TIERS.oro.min) return "oro";
+  if (amount >= DIPLOMA_TIERS.plata.min) return "plata";
+  return "bronce";
+}
+
 /**
  * Ceremonia de LA 2028 (14 de julio de 2028).
  * Fecha en UTC para que el contador sea consistente entre cliente y servidor.
