@@ -10,7 +10,7 @@ import { Reveal } from "@/components/Reveal";
 import { getAthleteBySlug, getAthletes } from "@/lib/data/athletes";
 import { getSport } from "@/config/sports";
 import { formatMoney, progressPct } from "@/lib/money";
-import { SITE } from "@/config/site";
+import { SITE, asset } from "@/config/site";
 
 export async function generateStaticParams() {
   const athletes = await getAthletes();
@@ -57,7 +57,7 @@ export default async function AthletePage({
             <div className="h-28 w-28 shrink-0 overflow-hidden rounded-xl border-2 border-white/30 sm:h-36 sm:w-36">
               {athlete.photo_url ? (
                 <Image
-                  src={athlete.photo_url}
+                  src={asset(athlete.photo_url)}
                   alt={athlete.full_name}
                   width={144}
                   height={144}

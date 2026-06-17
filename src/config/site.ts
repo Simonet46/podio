@@ -14,6 +14,18 @@ export const SITE = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 } as const;
 
+/**
+ * Prefijo de ruta del sitio (GitHub Pages lo sirve en /podio).
+ * next/image NO antepone el basePath al src de imágenes de /public cuando
+ * `unoptimized`, así que lo hacemos a mano con `asset()`.
+ */
+export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/** Antepone el basePath a una ruta de asset estático (imágenes de /public). */
+export function asset(path: string): string {
+  return `${BASE_PATH}${path}`;
+}
+
 /** Comisión de plataforma. 0.07 = 7%. El resto (93%) va al atleta. */
 export const PLATFORM_FEE_RATE = 0.07;
 

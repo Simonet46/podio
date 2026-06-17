@@ -5,7 +5,7 @@ import { CoverBand } from "@/components/CoverBand";
 import { CountdownFull } from "@/components/Countdown";
 import { getAthletes, getGlobalStats } from "@/lib/data/athletes";
 import { formatMoney } from "@/lib/money";
-import { PLATFORM_FEE_RATE } from "@/config/site";
+import { PLATFORM_FEE_RATE, asset } from "@/config/site";
 import { Reveal } from "@/components/Reveal";
 import Image from "next/image";
 import Link from "next/link";
@@ -69,7 +69,7 @@ export default async function HomePage() {
                   <div className="ribbon ribbon-tall absolute -top-3 left-6 right-6 z-10 rounded-full opacity-90" />
                   <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 shadow-2xl">
                     <Image
-                      src="/athletes/valentina-moretti.webp"
+                      src={asset("/athletes/valentina-moretti.webp")}
                       alt="Atleta argentina rumbo a LA 2028"
                       fill
                       priority

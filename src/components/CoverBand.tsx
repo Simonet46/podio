@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { asset } from "@/config/site";
 import { Ribbon } from "./Ribbon";
 
 /**
@@ -14,7 +15,7 @@ export function CoverBand() {
   return (
     <section className="relative isolate overflow-hidden bg-ink">
       <Image
-        src="/cover.webp"
+        src={asset("/cover.webp")}
         alt="Atleta caminando solo por la ruta al amanecer"
         fill
         priority

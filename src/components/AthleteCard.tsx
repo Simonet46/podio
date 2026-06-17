@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Athlete } from "@/lib/data/types";
 import { getSport } from "@/config/sports";
+import { asset } from "@/config/site";
 import { formatMoney, progressPct } from "@/lib/money";
 import { Monogram } from "./Monogram";
 import { ProgressBar } from "./ProgressBar";
@@ -21,7 +22,7 @@ export function AthleteCard({ athlete }: { athlete: Athlete }) {
       >
         {athlete.photo_url ? (
           <Image
-            src={athlete.photo_url}
+            src={asset(athlete.photo_url)}
             alt={athlete.full_name}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
