@@ -1,6 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AthleteGrid } from "@/components/AthleteGrid";
+import { CoverBand } from "@/components/CoverBand";
 import { CountdownFull } from "@/components/Countdown";
 import { getAthletes, getGlobalStats } from "@/lib/data/athletes";
 import { formatMoney } from "@/lib/money";
@@ -110,6 +111,9 @@ export default async function HomePage() {
             </Reveal>
           </div>
         </section>
+
+        {/* ───────── Portada (camino solitario) ───────── */}
+        <CoverBand />
 
         {/* ───────── Grid de atletas ───────── */}
         <section id="atletas" className="bg-ice">

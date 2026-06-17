@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Athlete, DonationType } from "@/lib/data/types";
 import { PRESET_AMOUNTS, PLATFORM_FEE_RATE } from "@/config/site";
 import { breakdown, formatMoney } from "@/lib/money";
@@ -11,7 +12,7 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
   const [amount, setAmount] = useState<number>(PRESET_AMOUNTS.once[1]);
   const [custom, setCustom] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const presets = PRESET_AMOUNTS[type];
   const { fee, net } = breakdown(amount);
@@ -44,24 +45,17 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
     setCustom("");
   }
 
-  async function handleSubmit() {
+  function handleSubmit() {
     if (amount <= 0 || loading) return;
     setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ slug: athlete.slug, amount, type }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "No se pudo iniciar el pago.");
-      // Stripe configurado → redirige a Checkout. Demo → página de gracias.
-      window.location.href = data.url as string;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Error inesperado.");
-      setLoading(false);
-    }
+    // Modo demo (sitio estático): redirige a la página de gracias sin cobro real.
+    // Para pagos reales se reintroduce el flujo de Stripe Checkout (ver README).
+    const params = new URLSearchParams({
+      slug: athlete.slug,
+      amount: String(amount),
+      type,
+    });
+    router.push(`/gracias?${params.toString()}`);
   }
 
   return (
@@ -156,12 +150,6 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
             strong
           />
         </dl>
-
-        {error && (
-          <p className="mt-3 text-sm text-ribbon-red" role="alert">
-            {error}
-          </p>
-        )}
 
         {/* CTA */}
         <button

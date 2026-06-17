@@ -1,7 +1,0 @@
-# Configuración de deploy para Netlify (Next.js runtime v5).
-[build]
-  command = "npm run build"
-  publish = ".next"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
