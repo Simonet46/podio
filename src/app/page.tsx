@@ -2,6 +2,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { AthleteGrid } from "@/components/AthleteGrid";
 import { CoverBand } from "@/components/CoverBand";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { LiveToast } from "@/components/LiveToast";
 import { CountdownFull } from "@/components/Countdown";
 import { getAthletes, getTeams, getGlobalStats } from "@/lib/data/athletes";
 import { formatMoney } from "@/lib/money";
@@ -16,6 +18,13 @@ export default async function HomePage() {
   const { athleteCount, totalRaised, supporterTotal } = await getGlobalStats();
   const netPct = Math.round((1 - PLATFORM_FEE_RATE) * 100);
   const feePct = Math.round(PLATFORM_FEE_RATE * 100);
+
+  // Destinatarios posibles para el feed "en vivo" de aportes.
+  const activityTargets = [
+    ...athletes.map((a) => ({ label: a.full_name, href: `/atleta/${a.slug}` })),
+    ...teams.map((t) => ({ label: t.name, href: `/equipo/${t.slug}` })),
+    { label: "todos los atletas", href: "/bancar-a-todos" },
+  ];
 
   return (
     <>
@@ -123,6 +132,11 @@ export default async function HomePage() {
         {/* ───────── Grid de atletas ───────── */}
         <section id="atletas" className="bg-ice">
           <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
+            {/* Actividad en vivo */}
+            <Reveal className="mb-10">
+              <ActivityFeed targets={activityTargets} />
+            </Reveal>
+
             <Reveal>
               <div className="mb-8">
                 <p className="eyebrow text-celeste-deep">En campaña</p>
@@ -200,6 +214,7 @@ export default async function HomePage() {
         </section>
       </main>
       <Footer />
+      <LiveToast targets={activityTargets} />
     </>
   );
 }

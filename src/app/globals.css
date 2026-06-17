@@ -92,6 +92,36 @@
     opacity: 1;
     transform: none;
   }
+
+  /* Item del feed: entra desde arriba al sumarse uno nuevo. */
+  @keyframes activityIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .activity-item {
+    animation: activityIn 0.45s ease-out;
+  }
+
+  /* Toast de actividad: asoma desde la izquierda. */
+  @keyframes toastIn {
+    from {
+      opacity: 0;
+      transform: translateX(-16px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .toast-in {
+    animation: toastIn 0.4s cubic-bezier(0.16, 0.84, 0.44, 1);
+  }
 }
 
 /* prefers-reduced-motion: respetar (sin animaciones). */
