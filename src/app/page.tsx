@@ -7,7 +7,8 @@ import { LiveToast } from "@/components/LiveToast";
 import { CountdownFull } from "@/components/Countdown";
 import { getAthletes, getTeams, getGlobalStats } from "@/lib/data/athletes";
 import { formatMoney } from "@/lib/money";
-import { PLATFORM_FEE_RATE, asset } from "@/config/site";
+import { topSupporters, initialsOf } from "@/lib/supporters";
+import { PLATFORM_FEE_RATE, asset, DIPLOMA_TIERS } from "@/config/site";
 import { Reveal } from "@/components/Reveal";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,6 +19,13 @@ export default async function HomePage() {
   const { athleteCount, totalRaised, supporterTotal } = await getGlobalStats();
   const netPct = Math.round((1 - PLATFORM_FEE_RATE) * 100);
   const feePct = Math.round(PLATFORM_FEE_RATE * 100);
+
+  const topThree = topSupporters(3);
+  const podiumColors = [
+    DIPLOMA_TIERS.oro.color,
+    DIPLOMA_TIERS.plata.color,
+    DIPLOMA_TIERS.bronce.color,
+  ];
 
   // Destinatarios posibles para el feed "en vivo" de aportes.
   const activityTargets = [
@@ -171,6 +179,60 @@ export default async function HomePage() {
                 >
                   Bancar a todos
                 </Link>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ───────── Top hinchas (teaser) ───────── */}
+        <section className="bg-ice">
+          <div className="mx-auto max-w-container px-4 py-14 sm:px-6">
+            <Reveal>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="eyebrow text-celeste-deep">Comunidad</p>
+                  <h2 className="mt-2 font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
+                    Top hinchas del mes
+                  </h2>
+                  <p className="mt-2 text-steel">
+                    Los que más están bancando al deporte argentino.
+                  </p>
+                </div>
+                <Link
+                  href="/hinchas"
+                  className="font-display text-sm font-600 uppercase tracking-wide text-celeste-deep hover:underline"
+                >
+                  Ver ranking completo →
+                </Link>
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                {topThree.map((s, i) => (
+                  <div
+                    key={s.rank}
+                    className={`flex items-center gap-3 rounded-2xl border bg-paper p-4 ${
+                      i === 0 ? "border-gold" : "border-line"
+                    }`}
+                  >
+                    <span
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display text-base font-700 text-ink"
+                      style={{ backgroundColor: podiumColors[i] }}
+                    >
+                      {s.rank}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate font-display font-700 uppercase tracking-wide text-ink">
+                        {s.name}
+                      </div>
+                      <div className="text-xs text-steel">
+                        banca a {s.athletes} atletas
+                      </div>
+                    </div>
+                    <span className="shrink-0 font-display font-700 text-celeste-deep">
+                      {formatMoney(s.total)}
+                    </span>
+                  </div>
+                ))}
               </div>
             </Reveal>
           </div>

@@ -26,6 +26,9 @@ export function Footer() {
             <Link href="/bancar-a-todos" className="hover:text-white">
               Bancá a todos
             </Link>
+            <Link href="/hinchas" className="hover:text-white">
+              Top hinchas
+            </Link>
             <Link href="/#como-funciona" className="hover:text-white">
               Cómo funciona
             </Link>

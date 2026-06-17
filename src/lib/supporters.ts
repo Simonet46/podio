@@ -52,6 +52,48 @@ export function initialsOf(name: string): string {
     .toUpperCase();
 }
 
+const LASTNAMES = [
+  "Gómez", "López", "Pérez", "Fernández", "Rodríguez", "García", "Martínez",
+  "Sánchez", "Romero", "Díaz", "Álvarez", "Torres", "Ruiz", "Ramírez", "Flores",
+  "Acosta", "Benítez", "Medina", "Castro", "Rojas", "Molina", "Ortiz", "Silva",
+  "Núñez", "Luna", "Herrera", "Cabrera", "Vega", "Ríos", "Suárez",
+];
+
+export interface TopSupporter {
+  rank: number;
+  name: string;
+  /** Total aportado en el período (USD). */
+  total: number;
+  /** A cuántos atletas/equipos banca. */
+  athletes: number;
+}
+
+/** Ranking determinístico de los que más bancan (para "Top hinchas del mes"). */
+export function topSupporters(n: number): TopSupporter[] {
+  const out: TopSupporter[] = [];
+  const used = new Set<string>();
+  for (let i = 0; i < n; i++) {
+    const h = hash(`top-${i}`);
+    const fi = (h >>> 3) % POOL.length;
+    let li = h % LASTNAMES.length;
+    let name = `${POOL[fi]} ${LASTNAMES[li]}`;
+    let guard = 0;
+    while (used.has(name) && guard < LASTNAMES.length) {
+      li = (li + 1) % LASTNAMES.length;
+      name = `${POOL[fi]} ${LASTNAMES[li]}`;
+      guard++;
+    }
+    used.add(name);
+    const base = 2600 - i * 115;
+    const jitter = (h % 100) - 50;
+    const total = Math.max(120, Math.round((base + jitter) / 5) * 5);
+    const athletes = 1 + (h % 14);
+    out.push({ rank: i + 1, name, total, athletes });
+  }
+  out.sort((a, b) => b.total - a.total).forEach((s, i) => (s.rank = i + 1));
+  return out;
+}
+
 /** Lista determinística de hinchas para mostrar (avatar + nombre + nivel). */
 export function supportersFor(slug: string, take: number): Supporter[] {
   const h = hash(slug);
