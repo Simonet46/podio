@@ -3,7 +3,7 @@ import { Footer } from "@/components/Footer";
 import { AthleteGrid } from "@/components/AthleteGrid";
 import { CoverBand } from "@/components/CoverBand";
 import { CountdownFull } from "@/components/Countdown";
-import { getAthletes, getGlobalStats } from "@/lib/data/athletes";
+import { getAthletes, getTeams, getGlobalStats } from "@/lib/data/athletes";
 import { formatMoney } from "@/lib/money";
 import { PLATFORM_FEE_RATE, asset } from "@/config/site";
 import { Reveal } from "@/components/Reveal";
@@ -12,6 +12,7 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const athletes = await getAthletes();
+  const teams = await getTeams();
   const { athleteCount, totalRaised } = await getGlobalStats();
   const netPct = Math.round((1 - PLATFORM_FEE_RATE) * 100);
   const feePct = Math.round(PLATFORM_FEE_RATE * 100);
@@ -126,7 +127,34 @@ export default async function HomePage() {
                 </h2>
               </div>
             </Reveal>
-            <AthleteGrid athletes={athletes} />
+            <AthleteGrid athletes={athletes} teams={teams} />
+          </div>
+        </section>
+
+        {/* ───────── Bancá a todos ───────── */}
+        <section className="bg-ink text-white">
+          <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
+            <Reveal>
+              <div className="flex flex-col items-start gap-6 rounded-2xl border border-white/10 bg-ink-2 p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
+                <div className="max-w-2xl">
+                  <p className="eyebrow text-gold">¿No sabés a quién elegir?</p>
+                  <h2 className="mt-3 font-display text-3xl font-700 uppercase leading-tight tracking-tight sm:text-4xl">
+                    Bancá a todos los atletas
+                  </h2>
+                  <p className="mt-3 text-white/75">
+                    Poné el monto que quieras y se reparte en partes iguales entre
+                    los {athleteCount} atletas y jugadores rumbo al Mundial. Una sola
+                    vez o por mes.
+                  </p>
+                </div>
+                <Link
+                  href="/bancar-a-todos"
+                  className="shrink-0 rounded-md bg-gold px-7 py-3.5 font-display text-base font-700 uppercase tracking-wide text-ink transition-transform hover:scale-[1.03]"
+                >
+                  Bancar a todos
+                </Link>
+              </div>
+            </Reveal>
           </div>
         </section>
 

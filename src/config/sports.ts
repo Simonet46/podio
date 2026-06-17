@@ -1,9 +1,11 @@
 /**
- * Catálogo de deportes individuales subfinanciados.
- * Cada deporte tiene un color de panel para las tarjetas y el hero del perfil.
+ * Catálogo de deportes.
+ * `team: true` → deporte de equipo (se puede bancar al equipo o a jugadores).
+ * Cada deporte tiene un color de panel para tarjetas y heroes.
  */
 
 export type SportKey =
+  // individuales
   | "canotaje"
   | "escalada"
   | "natacion"
@@ -11,13 +13,19 @@ export type SportKey =
   | "vela"
   | "judo"
   | "remo"
-  | "bmx";
+  | "bmx"
+  // de equipo
+  | "hockey"
+  | "voley"
+  | "handball";
 
 export interface Sport {
   key: SportKey;
   label: string;
-  /** Color de panel (tarjeta + hero del perfil). */
+  /** Color de panel (tarjeta + hero). */
   color: string;
+  /** ¿Es deporte de equipo? */
+  team?: boolean;
 }
 
 export const SPORTS: Record<SportKey, Sport> = {
@@ -29,6 +37,9 @@ export const SPORTS: Record<SportKey, Sport> = {
   judo: { key: "judo", label: "Judo", color: "#3A4A5C" },
   remo: { key: "remo", label: "Remo", color: "#2C6E63" },
   bmx: { key: "bmx", label: "BMX", color: "#C24A3A" },
+  hockey: { key: "hockey", label: "Hockey", color: "#1B7A4B", team: true },
+  voley: { key: "voley", label: "Vóley", color: "#B5882A", team: true },
+  handball: { key: "handball", label: "Handball", color: "#9C3B5A", team: true },
 };
 
 export const SPORT_LIST: Sport[] = Object.values(SPORTS);

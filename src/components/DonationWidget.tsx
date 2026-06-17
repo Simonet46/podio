@@ -2,12 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Athlete, DonationType } from "@/lib/data/types";
+import type { DonationType } from "@/lib/data/types";
 import { PRESET_AMOUNTS, PLATFORM_FEE_RATE } from "@/config/site";
 import { breakdown, formatMoney } from "@/lib/money";
 import { Ribbon } from "./Ribbon";
 
-export function DonationWidget({ athlete }: { athlete: Athlete }) {
+/** A quién va el aporte. */
+export interface DonationTarget {
+  kind: "athlete" | "team" | "all";
+  /** slug del atleta o equipo (no aplica a 'all'). */
+  slug?: string;
+  /** Título del widget, ej. "Bancá a Lucía". */
+  title: string;
+  /** Para 'team' y 'all': entre cuántos atletas se reparte el aporte. */
+  splitCount?: number;
+}
+
+export function DonationWidget({ target }: { target: DonationTarget }) {
   const [type, setType] = useState<DonationType>("once");
   const [amount, setAmount] = useState<number>(PRESET_AMOUNTS.once[1]);
   const [custom, setCustom] = useState<string>("");
@@ -18,8 +29,9 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
   const { fee, net } = breakdown(amount);
   const feePct = Math.round(PLATFORM_FEE_RATE * 100);
   const perMonth = type === "monthly";
+  const split = target.splitCount && target.splitCount > 0 ? target.splitCount : null;
+  const perEach = split ? net / split : net;
 
-  // Etiqueta del botón.
   const cta = useMemo(() => {
     if (amount <= 0) return "Ingresá un monto";
     return perMonth
@@ -40,7 +52,6 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
 
   function switchType(next: DonationType) {
     setType(next);
-    // Reseteamos a un preset del nuevo modo para evitar montos incoherentes.
     setAmount(PRESET_AMOUNTS[next][1]);
     setCustom("");
   }
@@ -48,13 +59,14 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
   function handleSubmit() {
     if (amount <= 0 || loading) return;
     setLoading(true);
-    // Modo demo (sitio estático): redirige a la página de gracias sin cobro real.
-    // Para pagos reales se reintroduce el flujo de Stripe Checkout (ver README).
+    // Modo demo (sitio estático): redirige a gracias sin cobro real.
     const params = new URLSearchParams({
-      slug: athlete.slug,
+      kind: target.kind,
       amount: String(amount),
       type,
     });
+    if (target.slug) params.set("slug", target.slug);
+    if (split) params.set("split", String(split));
     router.push(`/gracias?${params.toString()}`);
   }
 
@@ -63,7 +75,7 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
       <Ribbon tall />
       <div className="p-5 sm:p-6">
         <h2 className="font-display text-xl font-600 uppercase tracking-wide text-ink">
-          Bancá a {athlete.first_name}
+          {target.title}
         </h2>
 
         {/* Toggle único / mensual */}
@@ -144,11 +156,25 @@ export function DonationWidget({ athlete }: { athlete: Athlete }) {
             muted
           />
           <div className="my-1 border-t border-line" />
-          <Row
-            label={perMonth ? "El atleta recibe / mes" : "El atleta recibe"}
-            value={formatMoney(net, { cents: true })}
-            strong
-          />
+          {split ? (
+            <>
+              <Row
+                label={`Se reparte entre ${split} ${target.kind === "team" ? "jugadores" : "atletas"}`}
+                value={formatMoney(net, { cents: true })}
+              />
+              <Row
+                label={perMonth ? "Cada uno recibe / mes" : "Cada uno recibe"}
+                value={formatMoney(perEach, { cents: true })}
+                strong
+              />
+            </>
+          ) : (
+            <Row
+              label={perMonth ? "El atleta recibe / mes" : "El atleta recibe"}
+              value={formatMoney(net, { cents: true })}
+              strong
+            />
+          )}
         </dl>
 
         {/* CTA */}
@@ -180,10 +206,10 @@ function Row({
   strong?: boolean;
 }) {
   return (
-    <div className="flex items-baseline justify-between">
+    <div className="flex items-baseline justify-between gap-3">
       <dt className={muted ? "text-steel" : "text-ink"}>{label}</dt>
       <dd
-        className={`font-display tabular-nums ${
+        className={`shrink-0 font-display tabular-nums ${
           strong
             ? "text-lg font-700 text-celeste-deep"
             : muted

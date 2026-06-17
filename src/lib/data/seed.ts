@@ -222,4 +222,71 @@ export const SEED_ATHLETES: Athlete[] = [
     stripe_account_id: null,
     created_at: "2026-02-01T10:00:00Z",
   },
+
+  // ───────── Jugadores de equipos (deportes de equipo) ─────────
+  // Pertenecen a un equipo (campo `team`). No aparecen sueltos en el home,
+  // sino dentro de su equipo; igual tienen perfil propio y se pueden bancar.
+
+  // Handball — Equipo Argentino de Handball
+  player("bruno-vidal", "Bruno Vidal", "handball", "handball-arg", "Pivote", "Buenos Aires", "Buenos Aires", "Pivote de garra, gana cada duelo en el área de seis metros. Sueña con jugar el Mundial con la celeste y blanca.", 6000, 2100),
+  player("lautaro-gomez", "Lautaro Gómez", "handball", "handball-arg", "Lateral izquierdo", "Córdoba", "Córdoba", "El goleador del equipo desde el lateral. Combina potencia y muñeca para definir desde los nueve metros.", 6000, 3400),
+  player("nicolas-funes", "Nicolás Funes", "handball", "handball-arg", "Arquero", "Mendoza", "Mendoza", "El último muro. Sus atajadas en los minutos finales cambiaron más de un partido.", 6000, 1800),
+  player("inaki-perez", "Iñaki Pérez", "handball", "handball-arg", "Extremo derecho", "Bahía Blanca", "Buenos Aires", "Velocidad pura por la banda. Vive del contragolpe y los ángulos imposibles.", 6000, 2600),
+
+  // Hockey — Equipo Argentino de Hockey (femenino)
+  player("delfina-castro", "Delfina Castro", "hockey", "hockey-arg", "Volante", "Rosario", "Santa Fe", "El motor del mediocampo. Recupera, distribuye y nunca deja de correr.", 6500, 3900),
+  player("morena-ruiz", "Morena Ruiz", "hockey", "hockey-arg", "Delantera", "La Plata", "Buenos Aires", "Olfato de gol dentro del área. Su especialidad: aparecer donde nadie la espera.", 6500, 2700),
+  player("abril-sosa", "Abril Sosa", "hockey", "hockey-arg", "Arquera", "Mar del Plata", "Buenos Aires", "Reflejos felinos bajo los postes. Se entrena el doble para llegar al Mundial.", 6500, 1500),
+  player("juana-mendez", "Juana Méndez", "hockey", "hockey-arg", "Defensora", "Tucumán", "Tucumán", "Marca, anticipa y saca limpio desde el fondo. La tranquilidad de la última línea.", 6500, 2300),
+
+  // Vóley — Equipo Argentino de Vóley (masculino)
+  player("ivan-torres", "Iván Torres", "voley", "voley-arg", "Opuesto", "San Juan", "San Juan", "El rematador principal. Salta como pocos y define los puntos calientes.", 6000, 2900),
+  player("facundo-ledesma", "Facundo Ledesma", "voley", "voley-arg", "Central", "Santa Fe", "Santa Fe", "Bloqueo y ataque rápido por el medio. Dueño de la red.", 6000, 2200),
+  player("bautista-rios", "Bautista Ríos", "voley", "voley-arg", "Armador", "Neuquén", "Neuquén", "El cerebro del equipo. Cada jugada pasa por sus manos.", 6000, 3100),
+  player("thiago-paz", "Thiago Paz", "voley", "voley-arg", "Punta receptor", "Salta", "Salta", "Recibe, defiende y ataca: el todoterreno que sostiene al equipo.", 6000, 1700),
 ];
+
+/** Helper para crear un jugador de equipo con datos mínimos completos. */
+function player(
+  slug: string,
+  full_name: string,
+  sport: Athlete["sport"],
+  team: string,
+  role: string,
+  city: string,
+  province: string,
+  bio: string,
+  goal: number,
+  raised: number,
+): Athlete {
+  const first_name = full_name.split(" ")[0];
+  return {
+    id: slug,
+    slug,
+    full_name,
+    first_name,
+    sport,
+    discipline: role,
+    city,
+    province,
+    bio,
+    goal_amount: goal,
+    raised_amount: raised,
+    photo_url: null,
+    stats: [
+      [role, "Posición"],
+      ["Selección", "Categoría"],
+      ["Mundial", "Objetivo"],
+    ],
+    fund_items: [
+      ["Concentraciones", "Viajes y estadía con la selección rumbo al Mundial."],
+      ["Equipamiento", "Indumentaria y material de competición."],
+      ["Preparación", "Cuerpo técnico, físico y recuperación."],
+    ],
+    verified: true,
+    stripe_account_id: null,
+    created_at: "2026-02-05T10:00:00Z",
+    team,
+    role,
+  };
+}

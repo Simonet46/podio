@@ -27,10 +27,16 @@ export function Header() {
               Atletas
             </Link>
             <Link
-              href="/#como-funciona"
+              href="/bancar-a-todos"
               className="font-display text-sm uppercase tracking-wide text-white/75 transition-colors hover:text-white"
             >
-              Cómo funciona
+              Bancá a todos
+            </Link>
+            <Link
+              href="/quienes-somos"
+              className="font-display text-sm uppercase tracking-wide text-white/75 transition-colors hover:text-white"
+            >
+              Quiénes somos
             </Link>
           </nav>
 

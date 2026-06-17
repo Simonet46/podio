@@ -24,6 +24,31 @@ export interface Athlete {
   verified: boolean;
   stripe_account_id: string | null;
   created_at: string;
+  /** Slug del equipo al que pertenece (solo jugadores de deportes de equipo). */
+  team?: string;
+  /** Posición/rol dentro del equipo (ej. "Arquera", "Lateral izquierdo"). */
+  role?: string;
+}
+
+/** Campaña de un equipo (deportes de equipo). Se puede bancar entero o por jugador. */
+export interface Team {
+  id: string;
+  slug: string;
+  name: string;
+  sport: SportKey;
+  discipline: string;
+  city: string;
+  province: string;
+  bio: string;
+  goal_amount: number;
+  raised_amount: number;
+  photo_url: string | null;
+  stats: StatPair[];
+  fund_items: FundItem[];
+  verified: boolean;
+  /** Slugs de los jugadores (atletas) que integran el equipo. */
+  member_slugs: string[];
+  created_at: string;
 }
 
 export type DonationType = "once" | "monthly";

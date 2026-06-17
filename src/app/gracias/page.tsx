@@ -7,21 +7,40 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Ribbon } from "@/components/Ribbon";
 import { SEED_ATHLETES } from "@/lib/data/seed";
+import { SEED_TEAMS } from "@/lib/data/teams";
 import { breakdown, formatMoney } from "@/lib/money";
 import type { DonationType } from "@/lib/data/types";
 
 /**
  * Página de éxito post-aporte (modo demo, sitio estático).
- * Lee slug/amount/type de la URL del lado del cliente.
+ * Lee kind/slug/amount/type/split de la URL del lado del cliente.
  */
 function GraciasContent() {
   const sp = useSearchParams();
+  const kind = sp.get("kind") ?? "athlete";
   const slug = sp.get("slug") ?? "";
   const amount = parseFloat(sp.get("amount") ?? "0") || 0;
   const type: DonationType = sp.get("type") === "monthly" ? "monthly" : "once";
-  const athlete = slug ? SEED_ATHLETES.find((a) => a.slug === slug) ?? null : null;
-  const { net } = breakdown(amount);
+  const split = parseInt(sp.get("split") ?? "0", 10) || 0;
   const perMonth = type === "monthly";
+  const { net } = breakdown(amount);
+
+  const athlete =
+    kind === "athlete" && slug
+      ? SEED_ATHLETES.find((a) => a.slug === slug) ?? null
+      : null;
+  const team =
+    kind === "team" && slug ? SEED_TEAMS.find((t) => t.slug === slug) ?? null : null;
+
+  // Texto del destinatario y de la línea "recibe".
+  const targetName =
+    kind === "all"
+      ? `los ${split} atletas`
+      : kind === "team"
+        ? team?.name ?? "todo el equipo"
+        : athlete?.full_name ?? null;
+  const isSplit = kind === "all" || kind === "team";
+  const perEach = split > 0 ? net / split : net;
 
   return (
     <div className="mx-auto max-w-xl px-4 py-20 sm:px-6">
@@ -45,11 +64,11 @@ function GraciasContent() {
             ¡Gracias por bancar!
           </h1>
 
-          {athlete ? (
+          {targetName ? (
             <p className="mt-3 text-steel">
               Tu aporte {perMonth ? "mensual " : ""}a{" "}
-              <span className="font-600 text-ink">{athlete.full_name}</span> se
-              registró correctamente.
+              <span className="font-600 text-ink">{targetName}</span> se registró
+              correctamente.
             </p>
           ) : (
             <p className="mt-3 text-steel">Tu aporte se registró correctamente.</p>
@@ -66,10 +85,16 @@ function GraciasContent() {
               </div>
               <div className="flex justify-between">
                 <dt className="text-steel">
-                  {perMonth ? "El atleta recibe / mes" : "El atleta recibe (neto del 7%)"}
+                  {isSplit
+                    ? perMonth
+                      ? "Cada atleta recibe / mes"
+                      : `Cada atleta recibe (de ${split})`
+                    : perMonth
+                      ? "El atleta recibe / mes"
+                      : "El atleta recibe (neto del 7%)"}
                 </dt>
                 <dd className="font-display text-lg font-700 text-celeste-deep">
-                  {formatMoney(net, { cents: true })}
+                  {formatMoney(perEach, { cents: true })}
                 </dd>
               </div>
               <div className="flex justify-between">
@@ -95,11 +120,19 @@ function GraciasContent() {
                 Volver al perfil
               </Link>
             )}
+            {team && (
+              <Link
+                href={`/equipo/${team.slug}`}
+                className="rounded-md border border-ink px-5 py-2.5 font-display text-sm font-600 uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-white"
+              >
+                Volver al equipo
+              </Link>
+            )}
             <Link
               href="/#atletas"
               className="rounded-md bg-gold px-5 py-2.5 font-display text-sm font-700 uppercase tracking-wide text-ink transition-transform hover:scale-[1.03]"
             >
-              Bancar a otro atleta
+              Ver más campañas
             </Link>
           </div>
         </div>

@@ -21,10 +21,16 @@ export function Footer() {
           <nav className="flex flex-col gap-2 text-sm">
             <span className="eyebrow mb-1 text-white/45">Navegar</span>
             <Link href="/#atletas" className="hover:text-white">
-              Atletas
+              Atletas y equipos
+            </Link>
+            <Link href="/bancar-a-todos" className="hover:text-white">
+              Bancá a todos
             </Link>
             <Link href="/#como-funciona" className="hover:text-white">
               Cómo funciona
+            </Link>
+            <Link href="/quienes-somos" className="hover:text-white">
+              Quiénes somos
             </Link>
           </nav>
         </div>

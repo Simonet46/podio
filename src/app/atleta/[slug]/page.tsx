@@ -1,19 +1,20 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { DonationWidget } from "@/components/DonationWidget";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Monogram } from "@/components/Monogram";
 import { Reveal } from "@/components/Reveal";
-import { getAthleteBySlug, getAthletes } from "@/lib/data/athletes";
+import { getAthleteBySlug, getAllAthletes, getTeamBySlug } from "@/lib/data/athletes";
 import { getSport } from "@/config/sports";
 import { formatMoney, progressPct } from "@/lib/money";
 import { SITE, asset } from "@/config/site";
 
 export async function generateStaticParams() {
-  const athletes = await getAthletes();
+  const athletes = await getAllAthletes();
   return athletes.map((a) => ({ slug: a.slug }));
 }
 
@@ -41,6 +42,7 @@ export default async function AthletePage({
   const sport = getSport(athlete.sport);
   const color = sport?.color ?? "#1E6E8C";
   const pct = progressPct(athlete.raised_amount, athlete.goal_amount);
+  const team = athlete.team ? await getTeamBySlug(athlete.team) : null;
 
   return (
     <>
@@ -77,6 +79,14 @@ export default async function AthletePage({
               <p className="mt-2 text-white/85">
                 {athlete.city}, {athlete.province}
               </p>
+              {team && (
+                <Link
+                  href={`/equipo/${team.slug}`}
+                  className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-display text-xs font-600 uppercase tracking-wide text-white transition-colors hover:bg-white/25"
+                >
+                  ← Parte de {team.name}
+                </Link>
+              )}
             </div>
           </div>
         </section>
@@ -154,7 +164,13 @@ export default async function AthletePage({
             {/* Columna derecha: widget sticky */}
             <aside className="lg:relative">
               <div className="lg:sticky lg:top-24">
-                <DonationWidget athlete={athlete} />
+                <DonationWidget
+                  target={{
+                    kind: "athlete",
+                    slug: athlete.slug,
+                    title: `Bancá a ${athlete.first_name}`,
+                  }}
+                />
               </div>
             </aside>
           </div>
