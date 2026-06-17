@@ -29,7 +29,7 @@ const FOUNDERS: Founder[] = [
     nickname: "El Chino",
     role: "Handball · Los Gladiadores",
     color: SPORTS.handball.color,
-    photo: "/founders/diego-simonet.jpg",
+    photo: "/founders/diego-simonet.webp",
     bio: [
       "Referente histórico del handball argentino, lo llamaron “el Messi del handball”. Pasó 13 temporadas en el Montpellier de Francia, donde levantó la Champions League de Europa en 2018 además de copas y ligas.",
       "Con la Selección jugó seis Mundiales, tres Juegos Olímpicos y ganó tres oros panamericanos con Los Gladiadores. Se retiró en 2026 tras una carrera que marcó a una generación.",
@@ -39,7 +39,7 @@ const FOUNDERS: Founder[] = [
     name: "Pablo Simonet",
     role: "Handball · Los Gladiadores",
     color: SPORTS.handball.color,
-    photo: "/founders/pablo-simonet.jpg",
+    photo: "/founders/pablo-simonet.webp",
     bio: [
       "El menor de los hermanos Simonet, también Gladiador. Se formó jugando junto a sus hermanos en la Selección y desarrolló su carrera profesional en España.",
       "Defendió a la Argentina en los Juegos Olímpicos de París 2024. Conoce de primera mano lo que cuesta sostener una carrera de alto rendimiento lejos de casa.",
@@ -50,7 +50,7 @@ const FOUNDERS: Founder[] = [
     nickname: "Pilu",
     role: "Hockey · Las Leonas",
     color: SPORTS.hockey.color,
-    photo: "/founders/pilar-campoy.jpg",
+    photo: "/founders/pilar-campoy.webp",
     bio: [
       "Jugadora de la Selección Argentina de hockey, Las Leonas. Disputó los Juegos Olímpicos de Río 2016 y, ocho años después, volvió a vestir la celeste y blanca en París 2024.",
       "Medallista de oro en los Juegos Panamericanos 2023, vivió todo el ciclo olímpico desde adentro: la preparación, los viajes y el esfuerzo que casi nunca se ve.",
