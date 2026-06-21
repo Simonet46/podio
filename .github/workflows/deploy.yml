@@ -25,10 +25,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Build (export estático con basePath /podio)
+      - name: Build (export estático con basePath del repo)
         run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /podio
+          NEXT_PUBLIC_BASE_PATH: /podio-c7217b
       # Evita que GitHub Pages procese con Jekyll (si no, ignora /_next).
       - run: touch ./out/.nojekyll
       - uses: actions/configure-pages@v5
