@@ -9,6 +9,8 @@ import { Monogram } from "@/components/Monogram";
 import { Reveal } from "@/components/Reveal";
 import { SupporterStack } from "@/components/SupporterStack";
 import { SupporterWall } from "@/components/SupporterWall";
+import { SponsorLogo } from "@/components/SponsorLogo";
+import { getSponsorForSlug } from "@/lib/data/sponsors";
 import { getAthleteBySlug, getAllAthletes, getTeamBySlug } from "@/lib/data/athletes";
 import { getSport } from "@/config/sports";
 import { formatMoney } from "@/lib/money";
@@ -45,6 +47,7 @@ export default async function AthletePage({
   const color = sport?.color ?? "#1E6E8C";
   const backers = supporterCount(athlete.raised_amount);
   const team = athlete.team ? await getTeamBySlug(athlete.team) : null;
+  const sponsor = getSponsorForSlug(athlete.slug);
 
   return (
     <>
@@ -92,6 +95,18 @@ export default async function AthletePage({
             </div>
           </div>
         </section>
+
+        {/* ───────── Sponsor oficial (si tiene) ───────── */}
+        {sponsor && (
+          <div className="border-b border-line bg-paper">
+            <div className="mx-auto flex max-w-container flex-col items-center justify-center gap-2 px-4 py-4 sm:flex-row sm:gap-4 sm:px-6">
+              <span className="eyebrow text-steel">
+                Sponsor oficial de {athlete.first_name}
+              </span>
+              <SponsorLogo sponsor={sponsor} />
+            </div>
+          </div>
+        )}
 
         {/* ───────── Cuerpo ───────── */}
         <section className="bg-ice">
