@@ -41,6 +41,9 @@ export function Footer() {
             <Link href="/para-atletas" className="text-gold hover:text-gold-soft">
               ¿Sos atleta? Postulate
             </Link>
+            <Link href="/empresas" className="hover:text-white">
+              Para empresas
+            </Link>
           </nav>
         </div>
 

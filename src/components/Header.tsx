@@ -50,6 +50,12 @@ export function Header() {
             >
               ¿Sos atleta?
             </Link>
+            <Link
+              href="/empresas"
+              className="font-display text-sm uppercase tracking-wide text-white/75 transition-colors hover:text-white"
+            >
+              Empresas
+            </Link>
           </nav>
 
           {/* Contador + CTA */}
