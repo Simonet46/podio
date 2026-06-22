@@ -35,10 +35,11 @@ export default function ParaAtletasPage() {
               Dejá de hacerlo solo
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-              Si estás en proceso competitivo rumbo a Los Ángeles 2028 y te bancás
-              buena parte del camino, esto es para vos. Postulate, armamos tu campaña
-              y empezás a recibir apoyo directo de gente de todo el mundo —{netPct}%
-              para vos, {feePct}% para sostener la plataforma. Sin costo para el atleta.
+              No importa si vas rumbo a Los Ángeles 2028 o sos una promesa juvenil del
+              interior: si sos atleta argentino y te bancás buena parte del camino, esto
+              es para vos. Postulate, armamos tu campaña y empezás a recibir apoyo
+              directo —{netPct}% para vos, {feePct}% para sostener la plataforma. Sin
+              costo para el atleta.
             </p>
             <div className="mt-8">
               <Link

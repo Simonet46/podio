@@ -28,6 +28,12 @@ export interface Athlete {
   team?: string;
   /** Posición/rol dentro del equipo (ej. "Arquera", "Lateral izquierdo"). */
   role?: string;
+  /**
+   * Alcance de la campaña:
+   * - "la2028" (default): foco rumbo a Los Ángeles 2028.
+   * - "otros": cualquier atleta argentino (juvenil del barrio, regional, amateur…).
+   */
+  scope?: "la2028" | "otros";
 }
 
 /** Campaña de un equipo (deportes de equipo). Se puede bancar entero o por jugador. */

@@ -17,7 +17,11 @@ export type SportKey =
   // de equipo
   | "hockey"
   | "voley"
-  | "handball";
+  | "handball"
+  // otros / base (campañas individuales fuera del foco LA 2028)
+  | "futbol"
+  | "tenis"
+  | "basquet";
 
 export interface Sport {
   key: SportKey;
@@ -40,6 +44,9 @@ export const SPORTS: Record<SportKey, Sport> = {
   hockey: { key: "hockey", label: "Hockey", color: "#1B7A4B", team: true },
   voley: { key: "voley", label: "Vóley", color: "#B5882A", team: true },
   handball: { key: "handball", label: "Handball", color: "#9C3B5A", team: true },
+  futbol: { key: "futbol", label: "Fútbol", color: "#2E7D32" },
+  tenis: { key: "tenis", label: "Tenis", color: "#A2B43A" },
+  basquet: { key: "basquet", label: "Básquet", color: "#C25A28" },
 };
 
 export const SPORT_LIST: Sport[] = Object.values(SPORTS);

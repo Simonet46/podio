@@ -5,7 +5,8 @@ import { CoverBand } from "@/components/CoverBand";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { LiveToast } from "@/components/LiveToast";
 import { CountdownFull } from "@/components/Countdown";
-import { getAthletes, getTeams, getGlobalStats } from "@/lib/data/athletes";
+import { getAthletes, getOtherAthletes, getTeams, getGlobalStats } from "@/lib/data/athletes";
+import { AthleteCard } from "@/components/AthleteCard";
 import { formatMoney } from "@/lib/money";
 import { topSupporters, initialsOf } from "@/lib/supporters";
 import { PLATFORM_FEE_RATE, asset, DIPLOMA_TIERS } from "@/config/site";
@@ -15,6 +16,7 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const athletes = await getAthletes();
+  const otherAthletes = await getOtherAthletes();
   const teams = await getTeams();
   const { athleteCount, totalRaised, supporterTotal } = await getGlobalStats();
   const netPct = Math.round((1 - PLATFORM_FEE_RATE) * 100);
@@ -61,8 +63,9 @@ export default async function HomePage() {
                 </h1>
                 <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/75">
                   Muchos compiten al máximo nivel autofinanciándose: viajes,
-                  entrenador, equipo. Tu aporte llega directo —{netPct}% para el
-                  atleta, {feePct}% para sostener la plataforma.
+                  entrenador, equipo. Desde los que van rumbo a LA 2028 hasta el
+                  juvenil del barrio. Tu aporte llega directo —{netPct}% para el
+                  atleta, {feePct}% para la plataforma.
                 </p>
 
                 <div className="mt-8 flex flex-wrap gap-3">
@@ -154,6 +157,36 @@ export default async function HomePage() {
               </div>
             </Reveal>
             <AthleteGrid athletes={athletes} teams={teams} />
+          </div>
+        </section>
+
+        {/* ───────── Otros atletas argentinos ───────── */}
+        <section id="otros-atletas" className="bg-paper">
+          <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
+            <Reveal>
+              <div className="mb-2 flex items-center gap-3">
+                <span className="ribbon ribbon-tall w-16 rounded-full" aria-hidden />
+                <p className="eyebrow text-celeste-deep">No solo LA 2028</p>
+              </div>
+              <h2 className="font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
+                Otros atletas argentinos
+              </h2>
+              <p className="mt-2 max-w-2xl text-steel">
+                Acá entra cualquiera que la pelee: un juvenil del barrio, una promesa
+                del interior, un amateur que se banca todo. No van a un Juego Olímpico
+                mañana, pero merecen la misma chance.
+              </p>
+            </Reveal>
+
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {otherAthletes.map((a, i) => (
+                <Reveal key={a.id} delay={(i % 3) * 90} className="h-full">
+                  <div className="h-full [&>article]:h-full">
+                    <AthleteCard athlete={a} />
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
 

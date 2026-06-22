@@ -22,6 +22,8 @@ export function AthleteApplicationForm() {
         `Disciplina: ${data.disciplina ?? ""}`,
         `Ciudad / Provincia: ${data.ciudad ?? ""}`,
         `Email: ${data.email ?? ""}`,
+        `Edad: ${data.edad ?? ""}`,
+        `Mercado Pago: ${data.mercadopago ?? ""}`,
         `Nivel y logros: ${data.logros ?? ""}`,
         `Para qué necesita apoyo: ${data.necesidad ?? ""}`,
         `Redes / links: ${data.redes ?? ""}`,
@@ -110,6 +112,14 @@ export function AthleteApplicationForm() {
           <span className={labelText}>Email de contacto *</span>
           <input name="email" type="email" required className={input} />
         </label>
+        <label className={label}>
+          <span className={labelText}>Edad *</span>
+          <input name="edad" type="number" min={8} max={80} required className={input} />
+        </label>
+        <label className={label}>
+          <span className={labelText}>Mercado Pago (alias o CVU)</span>
+          <input name="mercadopago" placeholder="tu.alias.mp" className={input} />
+        </label>
         <label className={`${label} sm:col-span-2`}>
           <span className={labelText}>Nivel y logros *</span>
           <textarea
@@ -151,6 +161,7 @@ export function AthleteApplicationForm() {
       </button>
       <p className="mt-3 text-center text-xs text-steel">
         Revisamos cada postulación a mano antes de publicar. Sin costo para el atleta.
+        Si sos menor de edad, te contactamos junto a tu madre, padre o tutor.
       </p>
     </form>
   );
