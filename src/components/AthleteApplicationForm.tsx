@@ -1,18 +1,81 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SPORT_LIST } from "@/config/sports";
 import { WEB3FORMS_ACCESS_KEY, APPLICATIONS_EMAIL, SITE } from "@/config/site";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 import { MercadoPagoConnect } from "./MercadoPagoConnect";
 
 type Status = "idle" | "loading" | "ok" | "error";
+type Photos = { photo_url: string | null; photo_secondary_url: string | null };
+
+const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export function AthleteApplicationForm() {
   const [status, setStatus] = useState<Status>("idle");
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [secondaryFile, setSecondaryFile] = useState<File | null>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [secondaryPreview, setSecondaryPreview] = useState<string | null>(null);
+  const [fileMsg, setFileMsg] = useState("");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  function pickFile(
+    which: "profile" | "secondary",
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = e.target.files?.[0] ?? null;
+    setFileMsg("");
+    if (file && file.size > MAX_BYTES) {
+      setFileMsg("La imagen supera los 5 MB. Probá con una más liviana.");
+      e.target.value = "";
+      return;
+    }
+    const preview = file ? URL.createObjectURL(file) : null;
+    if (which === "profile") {
+      setProfileFile(file);
+      setProfilePreview(preview);
+    } else {
+      setSecondaryFile(file);
+      setSecondaryPreview(preview);
+    }
+  }
+
+  /** Sube las fotos al Storage y devuelve las URLs públicas. */
+  async function uploadPhotos(): Promise<Photos> {
+    const empty: Photos = { photo_url: null, photo_secondary_url: null };
+    if (!isSupabaseConfigured) return empty;
+    const supabase = await getSupabase();
+    if (!supabase) return empty;
+
+    async function up(file: File | null): Promise<string | null> {
+      if (!file) return null;
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const id =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.round(Math.random() * 1e6)}`;
+      const path = `applications/${id}.${ext}`;
+      const { error } = await supabase!.storage
+        .from("athlete-media")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (error) return null;
+      return supabase!.storage.from("athlete-media").getPublicUrl(path).data
+        .publicUrl;
+    }
+
+    const [photo_url, photo_secondary_url] = await Promise.all([
+      up(profileFile),
+      up(secondaryFile),
+    ]);
+    return { photo_url, photo_secondary_url };
+  }
 
   /** Guarda la postulación en Supabase como atleta PENDIENTE de revisión. */
-  async function saveToSupabase(data: Record<string, string>): Promise<boolean> {
+  async function saveToSupabase(
+    data: Record<string, string>,
+    photos: Photos,
+  ): Promise<boolean> {
     if (!isSupabaseConfigured) return false;
     try {
       const supabase = await getSupabase();
@@ -25,6 +88,8 @@ export function AthleteApplicationForm() {
         email: data.email || "",
         age: data.edad ? Number(data.edad) : null,
         media_url: data.foto || null,
+        photo_url: photos.photo_url,
+        photo_secondary_url: photos.photo_secondary_url,
         payment_link: data.mercadopago || null,
         achievements: data.logros || null,
         needs: data.necesidad || null,
@@ -38,7 +103,10 @@ export function AthleteApplicationForm() {
   }
 
   /** Notificación por email (Web3Forms) o, si no hay key, fallback a mailto. */
-  async function notifyByEmail(data: Record<string, string>): Promise<boolean> {
+  async function notifyByEmail(
+    data: Record<string, string>,
+    photos: Photos,
+  ): Promise<boolean> {
     if (WEB3FORMS_ACCESS_KEY) {
       try {
         const res = await fetch("https://api.web3forms.com/submit", {
@@ -49,6 +117,8 @@ export function AthleteApplicationForm() {
             subject: `Nueva postulación de atleta — ${SITE.brand}`,
             from_name: data.nombre || "Postulante",
             ...data,
+            foto_perfil: photos.photo_url ?? "(no subida)",
+            foto_secundaria: photos.photo_secondary_url ?? "(no subida)",
           }),
         });
         return res.ok;
@@ -56,7 +126,6 @@ export function AthleteApplicationForm() {
         return false;
       }
     }
-    // Sin key → abrimos el cliente de mail (gratis, funciona igual).
     const body = [
       `Nombre: ${data.nombre ?? ""}`,
       `Deporte: ${data.deporte ?? ""}`,
@@ -64,7 +133,9 @@ export function AthleteApplicationForm() {
       `Ciudad / Provincia: ${data.ciudad ?? ""}`,
       `Email: ${data.email ?? ""}`,
       `Edad: ${data.edad ?? ""}`,
-      `Foto/video: ${data.foto ?? ""}`,
+      `Foto de perfil: ${photos.photo_url ?? "(no subida)"}`,
+      `Foto secundaria: ${photos.photo_secondary_url ?? "(no subida)"}`,
+      `Video / redes: ${data.foto ?? ""}`,
       `Mercado Pago: ${data.mercadopago || "(no vinculado)"}`,
       `Nivel y logros: ${data.logros ?? ""}`,
       `Para qué necesita apoyo: ${data.necesidad ?? ""}`,
@@ -83,20 +154,21 @@ export function AthleteApplicationForm() {
 
     setStatus("loading");
 
+    // 0) Subir fotos al Storage (si Supabase está configurado).
+    const photos = await uploadPhotos();
+
     // 1) Fuente de verdad: la postulación queda en Supabase como pendiente.
-    const savedToDb = await saveToSupabase(data);
+    const savedToDb = await saveToSupabase(data, photos);
 
     if (savedToDb) {
-      // Notificación best-effort por Web3Forms (si está configurado).
-      // No abrimos mailto: ya quedó registrada en la DB.
-      if (WEB3FORMS_ACCESS_KEY) void notifyByEmail(data);
+      if (WEB3FORMS_ACCESS_KEY) void notifyByEmail(data, photos);
       setStatus("ok");
       form.reset();
       return;
     }
 
     // 2) Sin DB (o falló): el email es el canal principal (Web3Forms o mailto).
-    const notified = await notifyByEmail(data);
+    const notified = await notifyByEmail(data, photos);
     if (notified) {
       setStatus("ok");
       if (WEB3FORMS_ACCESS_KEY) form.reset();
@@ -130,7 +202,7 @@ export function AthleteApplicationForm() {
   const labelText = "eyebrow text-steel";
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-line bg-paper p-5 sm:p-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="rounded-2xl border border-line bg-paper p-5 sm:p-6">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className={`${label} sm:col-span-2`}>
           <span className={labelText}>Nombre y apellido *</span>
@@ -166,19 +238,43 @@ export function AthleteApplicationForm() {
           <span className={labelText}>Edad *</span>
           <input name="edad" type="number" min={8} max={80} required className={input} />
         </label>
-        <label className={label}>
-          <span className={labelText}>Foto o video tuyo (link) *</span>
+
+        {/* ─── Fotos ─── */}
+        <div className="sm:col-span-2">
+          <span className={labelText}>Tus fotos</span>
+          <p className="mt-1 text-xs text-steel">
+            Subí una foto de perfil (vertical, tu cara/medio cuerpo) y, si tenés,
+            una foto secundaria en acción. JPG o PNG, hasta 5 MB. Nosotros revisamos
+            y elegimos cuáles se publican.
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2">
+            <PhotoInput
+              label="Foto de perfil *"
+              required
+              preview={profilePreview}
+              onChange={(e) => pickFile("profile", e)}
+            />
+            <PhotoInput
+              label="Foto secundaria (en acción)"
+              preview={secondaryPreview}
+              onChange={(e) => pickFile("secondary", e)}
+            />
+          </div>
+          {fileMsg && <p className="mt-2 text-sm text-ribbon-red">{fileMsg}</p>}
+        </div>
+
+        <div className="sm:col-span-2">
+          <MercadoPagoConnect />
+        </div>
+        <label className={`${label} sm:col-span-2`}>
+          <span className={labelText}>Video o redes (link, opcional)</span>
           <input
             name="foto"
             type="url"
-            required
             placeholder="Instagram, YouTube, Drive…"
             className={input}
           />
         </label>
-        <div className="sm:col-span-2">
-          <MercadoPagoConnect />
-        </div>
         <label className={`${label} sm:col-span-2`}>
           <span className={labelText}>Nivel y logros *</span>
           <textarea
@@ -223,5 +319,47 @@ export function AthleteApplicationForm() {
         Si sos menor de edad, te contactamos junto a tu madre, padre o tutor.
       </p>
     </form>
+  );
+}
+
+function PhotoInput({
+  label,
+  preview,
+  required,
+  onChange,
+}: {
+  label: string;
+  preview: string | null;
+  required?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <label className="block cursor-pointer">
+      <span className="eyebrow text-steel">{label}</span>
+      <div className="mt-1 flex items-center gap-3 rounded-lg border border-dashed border-line bg-ice/40 p-3 transition-colors hover:border-celeste">
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md bg-line/40">
+          {preview ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={preview} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-steel">
+              <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+                <path d="M4 16l4-4 4 4 4-6 4 6M4 20h16V4H4z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 text-sm text-steel">
+          {preview ? "Cambiar foto" : "Elegí una imagen"}
+        </div>
+      </div>
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        required={required}
+        onChange={onChange}
+        className="hidden"
+      />
+    </label>
   );
 }

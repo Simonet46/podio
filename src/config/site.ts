@@ -21,8 +21,10 @@ export const SITE = {
  */
 export const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-/** Antepone el basePath a una ruta de asset estático (imágenes de /public). */
+/** Antepone el basePath a una ruta de asset estático (imágenes de /public).
+ *  Las URLs absolutas (http/https, ej. Supabase Storage) pasan sin tocar. */
 export function asset(path: string): string {
+  if (/^https?:\/\//.test(path)) return path;
   return `${BASE_PATH}${path}`;
 }
 

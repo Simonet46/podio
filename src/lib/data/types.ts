@@ -19,6 +19,8 @@ export interface Athlete {
   goal_amount: number;
   raised_amount: number;
   photo_url: string | null;
+  /** Foto secundaria (en acción) opcional, mostrada en el perfil. */
+  photo_secondary_url?: string | null;
   stats: StatPair[];
   fund_items: FundItem[];
   verified: boolean;

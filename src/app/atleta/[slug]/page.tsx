@@ -157,6 +157,21 @@ export default async function AthletePage({
                 <p className="mt-3 leading-relaxed text-steel">{athlete.bio}</p>
               </Reveal>
 
+              {/* Foto secundaria (en acción), si la tiene */}
+              {athlete.photo_secondary_url && (
+                <Reveal className="mt-8">
+                  <div className="overflow-hidden rounded-2xl border border-line">
+                    <Image
+                      src={asset(athlete.photo_secondary_url)}
+                      alt={`${athlete.first_name} en acción`}
+                      width={1200}
+                      height={800}
+                      className="h-auto w-full object-cover"
+                    />
+                  </div>
+                </Reveal>
+              )}
+
               {/* Tu aporte financia */}
               <Reveal className="mt-8">
                 <h2 className="font-display text-2xl font-600 uppercase tracking-wide text-ink">
