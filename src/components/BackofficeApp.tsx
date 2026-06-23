@@ -22,6 +22,7 @@ type Application = {
   location: string | null;
   email: string;
   age: number | null;
+  next_competition: string | null;
   media_url: string | null;
   photo_url: string | null;
   photo_secondary_url: string | null;
@@ -49,6 +50,7 @@ type Draft = {
   bio: string;
   goal_amount: string;
   scope: "la2028" | "otros";
+  next_competition: string;
   photo_url: string | null;
   photo_secondary_url: string | null;
   stats: [string, string][];
@@ -84,6 +86,7 @@ function buildDraft(app: Application): Draft {
     bio,
     goal_amount: "10000",
     scope: "la2028",
+    next_competition: app.next_competition ?? "",
     photo_url: app.photo_url,
     photo_secondary_url: app.photo_secondary_url,
     stats: [["", ""], ["", ""], ["", ""]],
@@ -216,6 +219,7 @@ export function BackofficeApp() {
         raised_amount: 0,
         verified: true,
         scope: draft.scope,
+        next_competition: draft.next_competition || null,
         photo_url: draft.photo_url,
         photo_secondary_url: draft.photo_secondary_url,
         stats,
@@ -431,6 +435,7 @@ export function BackofficeApp() {
 
                   <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
                     <Field label="Email" value={app.email} />
+                    <Field label="Próxima competencia" value={app.next_competition} />
                     <Field label="Video / redes" value={app.media_url} link />
                     <Field label="Mercado Pago" value={app.payment_link} />
                     <Field label="Redes" value={app.socials} />
@@ -464,7 +469,10 @@ export function BackofficeApp() {
               </button>
             </div>
             <p className="mt-1 text-sm text-steel">
-              Revisá las fotos y completá el perfil. Al guardar queda publicado (verified).
+              Estos datos arman el <strong>perfil público</strong> del atleta. Lo
+              marcado con <span className="text-ribbon-red">*</span> es obligatorio;
+              el resto podés completarlo ahora o más adelante. Al guardar, el perfil
+              queda publicado.
             </p>
 
             {/* Fotos a aprobar */}
@@ -500,8 +508,8 @@ export function BackofficeApp() {
 
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <Text label="Nombre completo *" required value={draft.full_name} onChange={(v) => setDraft({ ...draft, full_name: v })} wide />
-              <Text label="Nombre (corto) *" required value={draft.first_name} onChange={(v) => setDraft({ ...draft, first_name: v })} />
-              <Text label="Slug (URL) *" required value={draft.slug} onChange={(v) => setDraft({ ...draft, slug: slugify(v) })} />
+              <Text label="Nombre (corto) *" required value={draft.first_name} onChange={(v) => setDraft({ ...draft, first_name: v })} hint="Cómo lo llamamos en la página (ej. solo el nombre)." />
+              <Text label="Slug (URL) *" required value={draft.slug} onChange={(v) => setDraft({ ...draft, slug: slugify(v) })} hint="La dirección de su perfil: /atleta/este-texto" />
               <label className="block text-sm">
                 <span className={eyebrow}>Deporte *</span>
                 <select required value={draft.sport} onChange={(e) => setDraft({ ...draft, sport: e.target.value })} className={input}>
@@ -511,15 +519,18 @@ export function BackofficeApp() {
                   ))}
                 </select>
               </label>
-              <Text label="Disciplina *" required value={draft.discipline} onChange={(v) => setDraft({ ...draft, discipline: v })} />
+              <Text label="Disciplina *" required value={draft.discipline} onChange={(v) => setDraft({ ...draft, discipline: v })} hint="Su prueba o puesto (ej. 400m con vallas)." />
+              <Text label="Próxima competencia" value={draft.next_competition} onChange={(v) => setDraft({ ...draft, next_competition: v })} hint="Se muestra en el perfil (ej. Panamericano 2026)." />
               <Text label="Ciudad" value={draft.city} onChange={(v) => setDraft({ ...draft, city: v })} />
               <Text label="Provincia" value={draft.province} onChange={(v) => setDraft({ ...draft, province: v })} />
               <label className="block text-sm">
                 <span className={eyebrow}>Meta ($)</span>
+                <span className="mt-0.5 block text-xs text-steel">Objetivo de recaudación que se muestra en su perfil.</span>
                 <input type="number" min={0} value={draft.goal_amount} onChange={(e) => setDraft({ ...draft, goal_amount: e.target.value })} className={input} />
               </label>
               <label className="block text-sm">
                 <span className={eyebrow}>Alcance</span>
+                <span className="mt-0.5 block text-xs text-steel">Dónde aparece en la home.</span>
                 <select value={draft.scope} onChange={(e) => setDraft({ ...draft, scope: e.target.value as "la2028" | "otros" })} className={input}>
                   <option value="la2028">Rumbo a LA 2028</option>
                   <option value="otros">Otros atletas argentinos</option>
@@ -527,17 +538,20 @@ export function BackofficeApp() {
               </label>
               <label className="block text-sm sm:col-span-2">
                 <span className={eyebrow}>Historia / bio</span>
+                <span className="mt-0.5 block text-xs text-steel">El texto largo que se lee en su perfil. Ya viene armado con lo que escribió; editalo si querés.</span>
                 <textarea rows={4} value={draft.bio} onChange={(e) => setDraft({ ...draft, bio: e.target.value })} className={input} />
               </label>
 
               <PairEditor
                 title="Stats (valor / etiqueta)"
+                hint="Los 3 recuadritos de números del perfil. Opcional. Ej.: valor «#2», etiqueta «Ranking nacional»."
                 rows={draft.stats}
                 placeholders={["Valor (ej. #2)", "Etiqueta (ej. Ranking)"]}
                 onChange={(stats) => setDraft({ ...draft, stats })}
               />
               <PairEditor
                 title="Tu aporte financia (título / descripción)"
+                hint="Los 3 ítems que explican en qué se usa la plata. Opcional. Ej.: «Viajes» / «Pasajes a clasificatorios»."
                 rows={draft.fund_items}
                 placeholders={["Título", "Descripción"]}
                 onChange={(fund_items) => setDraft({ ...draft, fund_items })}
@@ -626,16 +640,19 @@ function Text({
   onChange,
   required,
   wide,
+  hint,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   required?: boolean;
   wide?: boolean;
+  hint?: string;
 }) {
   return (
     <label className={`block text-sm ${wide ? "sm:col-span-2" : ""}`}>
       <span className={eyebrow}>{label}</span>
+      {hint && <span className="mt-0.5 block text-xs text-steel">{hint}</span>}
       <input required={required} value={value} onChange={(e) => onChange(e.target.value)} className={input} />
     </label>
   );
@@ -643,11 +660,13 @@ function Text({
 
 function PairEditor({
   title,
+  hint,
   rows,
   placeholders,
   onChange,
 }: {
   title: string;
+  hint?: string;
   rows: [string, string][];
   placeholders: [string, string];
   onChange: (rows: [string, string][]) => void;
@@ -655,6 +674,7 @@ function PairEditor({
   return (
     <div className="sm:col-span-2">
       <span className={eyebrow}>{title}</span>
+      {hint && <span className="mt-0.5 block text-xs text-steel">{hint}</span>}
       <div className="mt-1 space-y-2">
         {rows.map((row, i) => (
           <div key={i} className="flex gap-2">

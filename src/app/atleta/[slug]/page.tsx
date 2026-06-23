@@ -84,6 +84,11 @@ export default async function AthletePage({
               <p className="mt-2 text-white/85">
                 {athlete.city}, {athlete.province}
               </p>
+              {athlete.next_competition && (
+                <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-sm text-white">
+                  <span aria-hidden>📅</span> Próxima: {athlete.next_competition}
+                </p>
+              )}
               {team && (
                 <Link
                   href={`/equipo/${team.slug}`}

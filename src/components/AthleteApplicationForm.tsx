@@ -87,6 +87,7 @@ export function AthleteApplicationForm() {
         location: data.ciudad || null,
         email: data.email || "",
         age: data.edad ? Number(data.edad) : null,
+        next_competition: data.proxima_competencia || null,
         media_url: data.foto || null,
         photo_url: photos.photo_url,
         photo_secondary_url: photos.photo_secondary_url,
@@ -133,6 +134,7 @@ export function AthleteApplicationForm() {
       `Ciudad / Provincia: ${data.ciudad ?? ""}`,
       `Email: ${data.email ?? ""}`,
       `Edad: ${data.edad ?? ""}`,
+      `Próxima competencia: ${data.proxima_competencia ?? ""}`,
       `Foto de perfil: ${photos.photo_url ?? "(no subida)"}`,
       `Foto secundaria: ${photos.photo_secondary_url ?? "(no subida)"}`,
       `Video / redes: ${data.foto ?? ""}`,
@@ -223,8 +225,8 @@ export function AthleteApplicationForm() {
           </select>
         </label>
         <label className={label}>
-          <span className={labelText}>Disciplina / prueba *</span>
-          <input name="disciplina" required placeholder="Ej. K1 1000m" className={input} />
+          <span className={labelText}>Disciplina / prueba</span>
+          <input name="disciplina" placeholder="Ej. K1 1000m" className={input} />
         </label>
         <label className={label}>
           <span className={labelText}>Ciudad / Provincia *</span>
@@ -238,6 +240,14 @@ export function AthleteApplicationForm() {
           <span className={labelText}>Edad *</span>
           <input name="edad" type="number" min={8} max={80} required className={input} />
         </label>
+        <label className={label}>
+          <span className={labelText}>Próxima competencia</span>
+          <input
+            name="proxima_competencia"
+            placeholder="Ej. Panamericano, septiembre 2026"
+            className={input}
+          />
+        </label>
 
         {/* ─── Fotos ─── */}
         <div className="sm:col-span-2">
@@ -249,8 +259,7 @@ export function AthleteApplicationForm() {
           </p>
           <div className="mt-3 grid gap-4 sm:grid-cols-2">
             <PhotoInput
-              label="Foto de perfil *"
-              required
+              label="Foto de perfil"
               preview={profilePreview}
               onChange={(e) => pickFile("profile", e)}
             />
@@ -285,16 +294,20 @@ export function AthleteApplicationForm() {
             className={input}
           />
         </label>
-        <label className={`${label} sm:col-span-2`}>
+        <div className={`${label} sm:col-span-2`}>
           <span className={labelText}>¿Para qué necesitás el apoyo? *</span>
+          <p className="mt-1 text-xs text-steel">
+            Este texto lo van a leer las personas que quieran apoyarte. Contá tu
+            situación con detalle: cuanto más claro, más fácil es que te ayuden.
+          </p>
           <textarea
             name="necesidad"
             required
-            rows={3}
-            placeholder="Viajes, entrenador, equipo, concentraciones…"
-            className={input}
+            rows={5}
+            placeholder="Ej.: Tu apoyo me permite pagarle a mi entrenador y a mi fisioterapeuta, comprar suplementos y vitaminas para recuperarme y rendir mejor, y costear los viajes, la estadía y la inscripción a las competencias clasificatorias. Hoy me banco casi todo solo: cada aporte me acerca a poder dedicarme 100% a entrenar y competir donde tengo que estar."
+            className={`${input} mt-2`}
           />
-        </label>
+        </div>
         <label className={`${label} sm:col-span-2`}>
           <span className={labelText}>Redes / links (Instagram, prensa, video)</span>
           <input name="redes" placeholder="@tu_usuario · enlaces" className={input} />

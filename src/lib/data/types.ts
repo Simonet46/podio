@@ -21,6 +21,8 @@ export interface Athlete {
   photo_url: string | null;
   /** Foto secundaria (en acción) opcional, mostrada en el perfil. */
   photo_secondary_url?: string | null;
+  /** Próxima competencia (texto libre), opcional. */
+  next_competition?: string | null;
   stats: StatPair[];
   fund_items: FundItem[];
   verified: boolean;
