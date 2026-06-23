@@ -68,8 +68,7 @@ export function CompanyContactForm() {
           ¡Gracias por el interés!
         </h3>
         <p className="mt-2 text-steel">
-          Te contactamos para armar juntos la mejor forma de que tu marca empuje al
-          deporte argentino.
+          Te contactamos para presentarte a los atletas que mejor van con tu marca.
         </p>
       </div>
     );

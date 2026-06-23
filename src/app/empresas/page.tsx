@@ -38,10 +38,10 @@ export default function EmpresasPage() {
               Tu marca, empujando al deporte argentino
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-              Detrás de cada atleta argentino hay una historia de garra y sacrificio.
-              Sumá tu empresa: patrociná a un atleta, un equipo o toda la plataforma, y
-              asociá tu marca a lo más lindo del deporte nacional — rumbo a Los Ángeles
-              2028 y más allá.
+              Detrás de cada atleta argentino hay una historia de garra. Te
+              <span className="text-white"> conectamos</span> con el atleta o el equipo
+              que mejor va con tu marca para que lo auspicies — el acuerdo lo cierran
+              ustedes, nosotros hacemos la presentación y le damos la visibilidad.
             </p>
             <div className="mt-8">
               <Link
@@ -101,17 +101,37 @@ export default function EmpresasPage() {
               ))}
             </div>
 
-            {/* Nota legal / sponsorship */}
+            {/* Cómo funciona / nuestro rol */}
             <Reveal className="mt-8">
               <div className="rounded-2xl border border-line bg-ice p-6 sm:p-8">
                 <h3 className="font-display text-lg font-700 uppercase tracking-wide text-ink">
-                  No es una donación: es inversión de marketing
+                  Cómo funciona (y cuál es nuestro rol)
                 </h3>
-                <p className="mt-3 leading-relaxed text-steel">
-                  A diferencia de una donación, el sponsoreo le da a tu empresa algo a
-                  cambio —visibilidad y asociación de marca— y suele tratarse como{" "}
-                  <span className="font-600 text-ink">gasto de publicidad deducible</span>.
-                  Armamos el acuerdo y la factura como corresponde. (Validá siempre con
+                <ol className="mt-4 space-y-3">
+                  {[
+                    ["Nos contás qué busca tu marca", "Presupuesto, valores, a quién te gustaría llegar."],
+                    ["Te proponemos atletas que encajan", "Te acercamos los perfiles que mejor van con tu identidad."],
+                    ["Cerrás el auspicio directo con el atleta", "El contrato y la factura van entre ustedes — cada uno con su contador."],
+                    ["Tu logo aparece en su perfil", "Visibilidad real en la campaña y el contenido del atleta."],
+                  ].map(([t, d], i) => (
+                    <li key={i} className="flex gap-3">
+                      <span className="font-display text-xl font-700 text-gold/50">
+                        0{i + 1}
+                      </span>
+                      <div>
+                        <div className="font-display text-sm font-600 uppercase tracking-wide text-ink">
+                          {t}
+                        </div>
+                        <p className="text-sm text-steel">{d}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-4 rounded-lg border border-line bg-paper p-4 text-sm text-steel">
+                  Es <span className="font-600 text-ink">publicidad, no donación</span>:
+                  para tu empresa suele ser un gasto deducible. Nosotros hacemos el{" "}
+                  <span className="font-600 text-ink">match</span> y la visibilidad — no
+                  intermediamos la plata ni el contrato del auspicio. (Validá siempre con
                   tu contador.)
                 </p>
                 <p className="mt-3 text-sm text-steel">
@@ -131,8 +151,8 @@ export default function EmpresasPage() {
                 Sumá tu empresa
               </h2>
               <p className="mt-2 text-steel">
-                Dejanos tus datos y te contactamos para armar la mejor forma de que tu
-                marca empuje al deporte argentino.
+                Dejanos tus datos y te contactamos para presentarte a los atletas que
+                mejor van con tu marca.
               </p>
             </Reveal>
             <div className="mt-8">
