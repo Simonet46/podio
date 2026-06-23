@@ -110,7 +110,12 @@ export function BackofficeApp() {
   const resolveSession = useCallback(async () => {
     const supa = sb();
     if (!supa) return setPhase("noenv");
-    const { data } = await supa.auth.getSession();
+    // getSession puede colgarse en algunos navegadores (lock de auth): lo
+    // corremos con un timeout para no quedar en "Cargando…" para siempre.
+    const timeout = new Promise<{ data: { session: null } }>((resolve) =>
+      setTimeout(() => resolve({ data: { session: null } }), 4000),
+    );
+    const { data } = await Promise.race([supa.auth.getSession(), timeout]);
     if (!data.session) return setPhase("login");
     setUserEmail(data.session.user.email ?? "");
     const { data: isAdmin } = await supa.rpc("is_admin");
