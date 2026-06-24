@@ -86,7 +86,7 @@ export default async function HomePage() {
         <CoverBand />
 
         {/* ───────── Grid de atletas ───────── */}
-        <section id="atletas" className="bg-ice">
+        <section id="atletas" className="bg-ink text-white">
           <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
             {/* Actividad en vivo */}
             <Reveal className="mb-10">
@@ -94,9 +94,9 @@ export default async function HomePage() {
             </Reveal>
 
             <Reveal>
-              <div className="mb-8">
-                <p className="eyebrow text-celeste-deep">En campaña</p>
-                <h2 className="mt-2 font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
+              <div className="mb-8 text-center">
+                <p className="eyebrow text-gold">Más historias</p>
+                <h2 className="mt-2 font-display text-3xl font-700 uppercase tracking-tight text-white sm:text-4xl">
                   Elegí a quién apoyar
                 </h2>
               </div>
@@ -106,17 +106,17 @@ export default async function HomePage() {
         </section>
 
         {/* ───────── Otros atletas argentinos ───────── */}
-        <section id="otros-atletas" className="bg-paper">
+        <section id="otros-atletas" style={{ background: "#0d2238" }} className="text-white">
           <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
             <Reveal>
               <div className="mb-2 flex items-center gap-3">
                 <span className="ribbon ribbon-tall w-16 rounded-full" aria-hidden />
-                <p className="eyebrow text-celeste-deep">No solo LA 2028</p>
+                <p className="eyebrow text-celeste">No solo LA 2028</p>
               </div>
-              <h2 className="font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
+              <h2 className="font-display text-3xl font-700 uppercase tracking-tight text-white sm:text-4xl">
                 Otros atletas argentinos
               </h2>
-              <p className="mt-2 max-w-2xl text-steel">
+              <p className="mt-2 max-w-2xl text-white/60">
                 Acá entra cualquiera que la pelee: un juvenil del barrio, una promesa
                 del interior, un amateur que se paga todo. No van a un Juego Olímpico
                 mañana, pero merecen la misma chance.
@@ -136,46 +136,93 @@ export default async function HomePage() {
         </section>
 
         {/* ───────── Apoyá a todos ───────── */}
-        <section className="bg-ink text-white">
-          <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
+        <section
+          className="relative overflow-hidden border-t border-white/[.06] text-white"
+          style={{ background: "linear-gradient(135deg,#0d2238,#0A1A2F)" }}
+        >
+          <div className="mx-auto max-w-[1100px] px-4 py-20 text-center sm:px-6">
             <Reveal>
-              <div className="flex flex-col items-start gap-6 rounded-2xl border border-white/10 bg-ink-2 p-8 sm:p-10 md:flex-row md:items-center md:justify-between">
-                <div className="max-w-2xl">
-                  <p className="eyebrow text-gold">¿No sabés a quién elegir?</p>
-                  <h2 className="mt-3 font-display text-3xl font-700 uppercase leading-tight tracking-tight sm:text-4xl">
-                    Apoyá a todos los atletas
-                  </h2>
-                  <p className="mt-3 text-white/75">
-                    Poné el monto que quieras y se reparte en partes iguales entre
-                    los {athleteCount} atletas y jugadores rumbo al Mundial. Una sola
-                    vez o por mes.
-                  </p>
-                </div>
-                <Link
-                  href="/apoyar-a-todos"
-                  className="shrink-0 rounded-md bg-gold px-7 py-3.5 font-display text-base font-700 uppercase tracking-wide text-ink transition-transform hover:scale-[1.03]"
-                >
-                  Apoyar a todos
-                </Link>
-              </div>
+              <div
+                className="mx-auto mb-7 h-[18px] w-40 rounded-[4px]"
+                style={{ background: "linear-gradient(90deg,#0072CE 0 20%,#F4C300 20% 40%,#1A1A1A 40% 60%,#009F3D 60% 80%,#DF0024 80% 100%)" }}
+                aria-hidden
+              />
+              <h2 className="font-display text-4xl font-700 uppercase leading-[.95] tracking-tight sm:text-5xl">
+                Apoyá a todo el deporte<br className="hidden sm:block" /> argentino de una
+              </h2>
+              <p className="mx-auto mt-5 max-w-[560px] text-lg leading-relaxed text-white/70">
+                Un aporte mensual que se reparte entre atletas que recién empiezan.
+                Vos elegís el monto, nosotros lo distribuimos a mano.
+              </p>
+              <Link
+                href="/apoyar-a-todos"
+                className="mt-8 inline-block rounded-md bg-gold px-9 py-4 font-display text-base font-700 uppercase tracking-wide text-ink transition-transform hover:-translate-y-0.5"
+              >
+                Sumate al apoyo colectivo
+              </Link>
             </Reveal>
           </div>
         </section>
 
-        {/* ───────── Top hinchas (teaser) ───────── */}
+        {/* ───────── Top hinchas (pódium 3D) ───────── */}
         <section className="bg-ice">
-          <div className="mx-auto max-w-container px-4 py-14 sm:px-6">
+          <div className="mx-auto max-w-[1100px] px-4 py-20 sm:px-6">
             <Reveal>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="eyebrow text-celeste-deep">Comunidad</p>
-                  <h2 className="mt-2 font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
-                    Top hinchas del mes
-                  </h2>
-                  <p className="mt-2 text-steel">
-                    Los que más están apoyando al deporte argentino.
-                  </p>
-                </div>
+              <div className="mb-16 text-center">
+                <p className="eyebrow text-celeste-deep">Los que más empujan</p>
+                <h2 className="mt-2 font-display text-4xl font-700 uppercase tracking-tight text-ink sm:text-5xl">
+                  Top hinchas del mes
+                </h2>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div
+                className="flex items-end justify-center gap-6"
+                style={{ perspective: "1000px" }}
+              >
+                {/* Plata — 2° puesto */}
+                <Podium
+                  hincha={topThree[1]}
+                  rank={2}
+                  barH={150}
+                  barStyle="linear-gradient(180deg,#C8D2DC,#A9B6C2)"
+                  barShadow="0 18px 40px rgba(0,0,0,.18)"
+                  avatarBorder="#B8C2CC"
+                  numSize="text-4xl"
+                  avatarSize="h-20 w-20"
+                  nameSize="text-lg"
+                />
+                {/* Oro — 1° puesto */}
+                <Podium
+                  hincha={topThree[0]}
+                  rank={1}
+                  barH={210}
+                  barStyle="linear-gradient(180deg,#E0C04A,#C9A227)"
+                  barShadow="0 24px 50px rgba(201,162,39,.35)"
+                  avatarBorder="#C9A227"
+                  numSize="text-5xl"
+                  avatarSize="h-24 w-24"
+                  nameSize="text-xl"
+                  champion
+                />
+                {/* Bronce — 3° puesto */}
+                <Podium
+                  hincha={topThree[2]}
+                  rank={3}
+                  barH={120}
+                  barStyle="linear-gradient(180deg,#D6A179,#C0825A)"
+                  barShadow="0 18px 40px rgba(0,0,0,.18)"
+                  avatarBorder="#C8956A"
+                  numSize="text-3xl"
+                  avatarSize="h-20 w-20"
+                  nameSize="text-lg"
+                />
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <div className="mt-10 text-center">
                 <Link
                   href="/hinchas"
                   className="font-display text-sm font-600 uppercase tracking-wide text-celeste-deep hover:underline"
@@ -183,73 +230,71 @@ export default async function HomePage() {
                   Ver ranking completo →
                 </Link>
               </div>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                {topThree.map((s, i) => (
-                  <div
-                    key={s.rank}
-                    className={`flex items-center gap-3 rounded-2xl border bg-paper p-4 ${
-                      i === 0 ? "border-gold" : "border-line"
-                    }`}
-                  >
-                    <span
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-display text-base font-700 text-ink"
-                      style={{ backgroundColor: podiumColors[i] }}
-                    >
-                      {s.rank}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-display font-700 uppercase tracking-wide text-ink">
-                        {s.name}
-                      </div>
-                      <div className="text-xs text-steel">
-                        apoya a {s.athletes} atletas
-                      </div>
-                    </div>
-                    <span className="shrink-0 font-display font-700 text-celeste-deep">
-                      {formatMoney(s.total)}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </Reveal>
           </div>
         </section>
 
         {/* ───────── Cómo funciona ───────── */}
-        <section id="como-funciona" className="bg-paper">
-          <div className="mx-auto max-w-container px-4 py-16 sm:px-6">
+        <section id="como-funciona" className="bg-ink text-white">
+          <div className="mx-auto max-w-[1180px] px-4 py-20 sm:px-6">
             <Reveal>
-              <div className="mb-10">
-                <p className="eyebrow text-celeste-deep">Simple y transparente</p>
-                <h2 className="mt-2 font-display text-3xl font-700 uppercase tracking-tight text-ink sm:text-4xl">
+              <div className="mb-14 text-center">
+                <p className="eyebrow text-gold">Sin vueltas</p>
+                <h2 className="mt-2 font-display text-4xl font-700 uppercase tracking-tight sm:text-5xl">
                   Cómo funciona
                 </h2>
               </div>
             </Reveal>
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="mb-16 grid gap-6 md:grid-cols-3">
               <Reveal delay={0}>
                 <Step
                   n="01"
-                  title="Elegís un atleta"
-                  body="Explorás los perfiles verificados de deportistas individuales en proceso de clasificación y elegís a quién querés apoyar."
+                  numColor="text-gold"
+                  title="Elegí un atleta"
+                  body="Buscá por deporte, mirá su historia y su próxima competencia. Cada caso lo revisamos a mano."
                 />
               </Reveal>
               <Reveal delay={110}>
                 <Step
                   n="02"
-                  title="Aportás una vez o por mes"
-                  body="Donación única o mensual, con el monto que quieras. Ves en vivo cuánto recibe el atleta antes de confirmar."
+                  numColor="text-celeste"
+                  title="Apoyá todos los meses"
+                  body="Un aporte mensual, como en Patreon. Sin metas ni barras: lo que importa es apoyarlo en el día a día."
                 />
               </Reveal>
               <Reveal delay={220}>
                 <Step
                   n="03"
-                  title="La plata llega directo"
-                  body={`El ${netPct}% va al atleta y el ${feePct}% sostiene la plataforma. Pago seguro vía Stripe Connect: nunca custodiamos los fondos.`}
+                  numColor="text-[#009F3D]"
+                  title={`El ${netPct}% va al atleta`}
+                  body={`Retenemos solo el ${feePct}% para sostener la plataforma. El resto, directo a quien entrena.`}
                 />
               </Reveal>
             </div>
+
+            {/* Fundadores */}
+            <Reveal>
+              <div
+                className="flex flex-col gap-10 rounded-2xl border border-gold/25 p-10 md:flex-row md:items-center"
+                style={{ background: "linear-gradient(135deg,#0d2238,#0A1A2F)" }}
+              >
+                <div className="flex-1">
+                  <p className="eyebrow text-gold">Fundada por atletas</p>
+                  <h3 className="mt-3 font-display text-3xl font-700 uppercase leading-none">
+                    No te vemos como un número
+                  </h3>
+                  <p className="mt-3 text-base leading-relaxed text-white/70">
+                    Somos atletas y sabemos lo que cuesta. Por eso revisamos cada
+                    postulación a mano, una por una.
+                  </p>
+                </div>
+                <div className="flex gap-7">
+                  <Founder name="Diego Simonet" sport="Handball" />
+                  <Founder name="Pablo Simonet" sport="Handball" />
+                  <Founder name="Pilar Campoy" sport="Hockey" />
+                </div>
+              </div>
+            </Reveal>
           </div>
         </section>
       </main>
@@ -270,14 +315,101 @@ function Stat({ value, label }: { value: string; label: string }) {
   );
 }
 
-function Step({ n, title, body }: { n: string; title: string; body: string }) {
+function Step({
+  n,
+  title,
+  body,
+  numColor = "text-gold",
+}: {
+  n: string;
+  title: string;
+  body: string;
+  numColor?: string;
+}) {
   return (
-    <div className="rounded-xl border border-line bg-paper p-6">
-      <div className="font-display text-5xl font-700 text-gold/30">{n}</div>
-      <h3 className="mt-3 font-display text-xl font-600 uppercase tracking-wide text-ink">
-        {title}
-      </h3>
-      <p className="mt-2 text-sm leading-relaxed text-steel">{body}</p>
+    <div
+      className="rounded-[10px] border border-white/10 p-8"
+      style={{ background: "#0d2238" }}
+    >
+      <div className={`font-display text-[40px] font-700 leading-none ${numColor}`}>{n}</div>
+      <h3 className="mt-3.5 font-display text-xl font-600 uppercase text-white">{title}</h3>
+      <p className="mt-2 text-[15px] leading-relaxed text-white/65">{body}</p>
+    </div>
+  );
+}
+
+function Founder({ name, sport }: { name: string; sport: string }) {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("");
+  return (
+    <div className="text-center">
+      <div className="mx-auto mb-2.5 flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/20 bg-ink font-display text-xl font-700 text-white">
+        {initials}
+      </div>
+      <div className="font-display text-[15px] font-600 uppercase leading-none text-white">
+        {name}
+      </div>
+      <div className="mt-1 text-[12px] text-white/55">{sport}</div>
+    </div>
+  );
+}
+
+type PodiumHincha = { rank: number; name: string; athletes: number; total: number };
+
+function Podium({
+  hincha,
+  rank,
+  barH,
+  barStyle,
+  barShadow,
+  avatarBorder,
+  numSize,
+  avatarSize,
+  nameSize,
+  champion,
+}: {
+  hincha: PodiumHincha;
+  rank: number;
+  barH: number;
+  barStyle: string;
+  barShadow: string;
+  avatarBorder: string;
+  numSize: string;
+  avatarSize: string;
+  nameSize: string;
+  champion?: boolean;
+}) {
+  const initial = hincha?.name?.[0] ?? String(rank);
+  return (
+    <div className={`text-center ${champion ? "w-[200px] sm:w-[220px]" : "w-[160px] sm:w-[200px]"}`}>
+      {champion && <p className="eyebrow mb-2 text-gold">Hincha del mes</p>}
+      <div
+        className={`mx-auto mb-3.5 flex ${avatarSize} items-center justify-center rounded-full font-display font-700 text-white`}
+        style={{ border: `3px solid ${avatarBorder}`, background: avatarBorder }}
+      >
+        {initial}
+      </div>
+      <div className={`font-display font-600 uppercase text-ink ${nameSize}`}>
+        {hincha?.name ?? `Lugar ${rank}`}
+      </div>
+      <div className="mb-3.5 text-sm text-steel">
+        {hincha ? `${hincha.athletes} atletas apoyados` : "—"}
+      </div>
+      <div
+        className={`flex items-start justify-center rounded-t-lg ${champion ? "pt-[18px]" : "pt-3.5"}`}
+        style={{
+          height: barH,
+          background: barStyle,
+          transform: "rotateX(8deg)",
+          transformOrigin: "bottom",
+          boxShadow: barShadow,
+        }}
+      >
+        <span className={`font-display font-700 text-white/85 ${numSize}`}>{rank}</span>
+      </div>
     </div>
   );
 }

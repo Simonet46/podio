@@ -6,7 +6,6 @@ import { asset } from "@/config/site";
 import { formatMoney } from "@/lib/money";
 import { supporterCount } from "@/lib/supporters";
 import { Monogram } from "./Monogram";
-import { SupporterStack } from "./SupporterStack";
 
 export function AthleteCard({ athlete }: { athlete: Athlete }) {
   const sport = getSport(athlete.sport);
@@ -14,11 +13,14 @@ export function AthleteCard({ athlete }: { athlete: Athlete }) {
   const backers = supporterCount(athlete.raised_amount);
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-xl border border-line bg-paper shadow-sm transition-shadow hover:shadow-md">
-      {/* Panel de color por deporte + monograma (o foto si existe). */}
+    <article
+      className="group relative overflow-hidden rounded-xl shadow-[0_26px_60px_rgba(0,0,0,.45)]"
+      style={{ background: "#0d2238", borderTop: `3px solid ${color}` }}
+    >
       <Link
         href={`/atleta/${athlete.slug}`}
-        className="relative block aspect-[4/3] overflow-hidden"
+        className="relative block overflow-hidden"
+        style={{ aspectRatio: "3/4" }}
         aria-label={`Ver perfil de ${athlete.full_name}`}
       >
         {athlete.photo_url ? (
@@ -36,45 +38,43 @@ export function AthleteCard({ athlete }: { athlete: Athlete }) {
             className="h-full w-full transition-transform duration-500 group-hover:scale-105"
           />
         )}
+        {/* gradient overlay */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "linear-gradient(180deg, transparent 42%, rgba(13,34,56,.96))" }}
+        />
+        {/* sport badge */}
         <span
-          className="absolute left-3 top-3 rounded-full px-2.5 py-1 font-display text-[0.7rem] font-600 uppercase tracking-wide text-white"
-          style={{ backgroundColor: "rgba(10,26,47,0.72)" }}
+          className="absolute left-3.5 top-3.5 rounded-[3px] px-2.5 py-1 font-display text-[11px] font-600 uppercase tracking-[.12em] text-white"
+          style={{ backgroundColor: color }}
         >
           {sport?.label ?? athlete.sport}
         </span>
-      </Link>
-
-      {/* Cuerpo */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="font-display text-xl font-600 leading-tight text-ink">
-          <Link href={`/atleta/${athlete.slug}`} className="hover:text-celeste-deep">
+        {/* name + location */}
+        <div className="absolute inset-x-[18px] bottom-3.5">
+          <div className="font-display text-[23px] font-600 uppercase leading-none text-white">
             {athlete.full_name}
-          </Link>
-        </h3>
-        <p className="mt-0.5 text-sm text-steel">
-          {athlete.city}, {athlete.province} · {athlete.discipline}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between gap-2">
-          <SupporterStack slug={athlete.slug} count={backers} />
-          <div className="text-right font-display leading-tight">
-            <div className="text-sm">
-              <span className="font-700 text-celeste-deep">{backers}</span>{" "}
-              <span className="text-steel">apoyando</span>
-            </div>
-            <div className="text-sm font-600 text-ink">
-              {formatMoney(athlete.raised_amount)}
-            </div>
+          </div>
+          <div className="mt-0.5 text-[12px] text-white/65">
+            {athlete.city}, {athlete.province}
           </div>
         </div>
+      </Link>
 
-        <Link
-          href={`/atleta/${athlete.slug}`}
-          className="mt-4 block rounded-md border border-ink bg-ink py-2.5 text-center font-display text-sm font-600 uppercase tracking-wide text-white transition-colors hover:bg-ink-2"
-        >
-          Apoyar a {athlete.first_name}
-        </Link>
-      </div>
+      {/* footer row */}
+      <Link
+        href={`/atleta/${athlete.slug}`}
+        className="flex items-center justify-between px-[18px] py-4"
+      >
+        <div className="text-[13px] text-white/60">
+          <strong className="font-display text-[17px] text-white">{backers}</strong>{" "}
+          apoyando ·{" "}
+          <strong className="font-display text-[17px] text-gold">{formatMoney(athlete.raised_amount)}</strong>
+        </div>
+        <span className="font-display text-[13px] font-600 uppercase tracking-[.04em] text-gold">
+          Apoyar →
+        </span>
+      </Link>
     </article>
   );
 }
