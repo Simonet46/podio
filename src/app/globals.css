@@ -136,6 +136,15 @@
     animation-play-state: paused;
   }
 
+  /* Hero: fade-in al cambiar de atleta en el slider. */
+  @keyframes heroCardIn {
+    from { opacity: 0; transform: scale(.97); }
+    to   { opacity: 1; transform: none; }
+  }
+  .hero-card-in {
+    animation: heroCardIn .38s cubic-bezier(.2,.8,.2,1);
+  }
+
   /* Brillo deslizante en la barra de oro del pódium de hinchas. */
   @keyframes shineMove {
     0% { background-position: -120% 0; }

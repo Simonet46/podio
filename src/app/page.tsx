@@ -25,7 +25,7 @@ export default async function HomePage() {
   // Atletas destacados del hero: los 3 con más recaudado (con foto si tienen).
   const featured: HeroAthlete[] = [...athletes]
     .sort((a, b) => b.raised_amount - a.raised_amount)
-    .slice(0, 3)
+    .slice(0, 6)
     .map((a) => ({
       slug: a.slug,
       name: a.full_name,
