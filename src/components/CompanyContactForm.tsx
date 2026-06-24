@@ -6,14 +6,21 @@ import { WEB3FORMS_ACCESS_KEY, APPLICATIONS_EMAIL, SITE } from "@/config/site";
 type Status = "idle" | "loading" | "ok" | "error";
 
 const OPCIONES = [
-  "Apadrinar un atleta",
-  "Apoyar un equipo",
-  "Sponsor de la plataforma",
-  "A definir / quiero que me asesoren",
+  "Conectarme con un atleta específico",
+  "Que me presenten varios atletas",
+  "Asociar mi marca con la comunidad GRANITO",
+  "Todavía no sé / quiero explorar",
 ];
+
+const inputCls =
+  "w-full rounded-lg border border-white/14 bg-white/[.05] px-4 py-3.5 text-white placeholder-white/35 outline-none transition-colors focus:border-celeste text-[15px] font-inter";
+
+const selectCls =
+  "w-full rounded-lg border border-white/14 bg-[#0d2238] px-4 py-3.5 text-white outline-none transition-colors focus:border-celeste text-[15px] cursor-pointer";
 
 export function CompanyContactForm() {
   const [status, setStatus] = useState<Status>("idle");
+  const [emailVal, setEmailVal] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,12 +32,12 @@ export function CompanyContactForm() {
         `Empresa: ${data.empresa ?? ""}`,
         `Contacto: ${data.contacto ?? ""}`,
         `Email: ${data.email ?? ""}`,
-        `Teléfono: ${data.telefono ?? ""}`,
+        `Presupuesto: ${data.presupuesto ?? ""}`,
         `Interés: ${data.interes ?? ""}`,
         `Mensaje: ${data.mensaje ?? ""}`,
       ].join("\n");
       window.location.href = `mailto:${APPLICATIONS_EMAIL}?subject=${encodeURIComponent(
-        "Empresa interesada en sponsorear — " + SITE.brand,
+        "Empresa quiere conectar con atletas — " + SITE.brand,
       )}&body=${encodeURIComponent(body)}`;
       setStatus("ok");
       return;
@@ -43,14 +50,13 @@ export function CompanyContactForm() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
-          subject: `Empresa interesada en sponsorear — ${SITE.brand}`,
+          subject: `Empresa quiere conectar con atletas — ${SITE.brand}`,
           from_name: data.empresa || "Empresa",
           ...data,
         }),
       });
       if (!res.ok) throw new Error();
       setStatus("ok");
-      form.reset();
     } catch {
       setStatus("error");
     }
@@ -58,83 +64,91 @@ export function CompanyContactForm() {
 
   if (status === "ok") {
     return (
-      <div className="rounded-2xl border border-line bg-paper p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gold/15">
-          <svg viewBox="0 0 24 24" className="h-7 w-7 text-gold" fill="none" stroke="currentColor" strokeWidth={2.5} aria-hidden>
-            <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+      <div className="flex flex-col items-center justify-center py-14 text-center">
+        <div
+          className="mb-5 flex h-16 w-16 items-center justify-center rounded-full text-3xl"
+          style={{ background: "rgba(34,197,94,.16)", border: "1px solid rgba(34,197,94,.5)" }}
+        >
+          ✓
         </div>
-        <h3 className="mt-4 font-display text-2xl font-700 uppercase tracking-tight text-ink">
-          ¡Gracias por el interés!
-        </h3>
-        <p className="mt-2 text-steel">
-          Te contactamos para presentarte a los atletas que mejor van con tu marca.
+        <div className="font-display text-[28px] font-700 uppercase leading-none text-white">
+          ¡Gracias!
+        </div>
+        <p className="mx-auto mt-3 max-w-[300px] text-[15px] leading-[1.55] text-white/70">
+          Recibimos tu consulta. Te escribimos a{" "}
+          <span className="text-white">{emailVal}</span> con una propuesta de match en menos de 48 hs.
         </p>
       </div>
     );
   }
 
-  const input =
-    "mt-1 w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-ink outline-none focus:border-celeste";
-  const label = "block text-sm";
-  const labelText = "eyebrow text-steel";
-
   return (
-    <form onSubmit={handleSubmit} className="rounded-2xl border border-line bg-paper p-5 sm:p-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className={label}>
-          <span className={labelText}>Empresa *</span>
-          <input name="empresa" required className={input} />
-        </label>
-        <label className={label}>
-          <span className={labelText}>Persona de contacto *</span>
-          <input name="contacto" required className={input} />
-        </label>
-        <label className={label}>
-          <span className={labelText}>Email *</span>
-          <input name="email" type="email" required className={input} />
-        </label>
-        <label className={label}>
-          <span className={labelText}>Teléfono / WhatsApp</span>
-          <input name="telefono" className={input} />
-        </label>
-        <label className={`${label} sm:col-span-2`}>
-          <span className={labelText}>¿Cómo te gustaría sumarte? *</span>
-          <select name="interes" required defaultValue="" className={input}>
-            <option value="" disabled>
-              Elegí una opción
-            </option>
-            {OPCIONES.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={`${label} sm:col-span-2`}>
-          <span className={labelText}>Mensaje</span>
-          <textarea
-            name="mensaje"
-            rows={4}
-            placeholder="Contanos qué busca tu marca y a quién te gustaría apoyar."
-            className={input}
-          />
-        </label>
-      </div>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3.5">
+      <input
+        name="empresa"
+        required
+        placeholder="Nombre de tu empresa"
+        className={inputCls}
+      />
+      <input
+        name="contacto"
+        required
+        placeholder="Tu nombre y cargo"
+        className={inputCls}
+      />
+      <input
+        name="email"
+        type="email"
+        required
+        placeholder="Email corporativo"
+        className={inputCls}
+        value={emailVal}
+        onChange={(e) => setEmailVal(e.target.value)}
+      />
+      <select name="presupuesto" className={selectCls} defaultValue="">
+        <option value="" style={{ background: "#0d2238" }}>
+          Presupuesto mensual estimado
+        </option>
+        <option value="Hasta $100k" style={{ background: "#0d2238" }}>Hasta $100.000</option>
+        <option value="$100k–$500k" style={{ background: "#0d2238" }}>$100.000 – $500.000</option>
+        <option value="$500k+" style={{ background: "#0d2238" }}>Más de $500.000</option>
+        <option value="A definir" style={{ background: "#0d2238" }}>A definir</option>
+      </select>
+      <select name="interes" required className={selectCls} defaultValue="">
+        <option value="" disabled style={{ background: "#0d2238" }}>
+          ¿Cómo querés sumarte?
+        </option>
+        {OPCIONES.map((o) => (
+          <option key={o} value={o} style={{ background: "#0d2238" }}>
+            {o}
+          </option>
+        ))}
+      </select>
+      <textarea
+        name="mensaje"
+        rows={3}
+        placeholder="¿Qué buscás? (deporte, valores de marca, objetivos…)"
+        className={inputCls}
+        style={{ resize: "none" }}
+      />
 
       {status === "error" && (
-        <p className="mt-3 text-sm text-ribbon-red">
-          No se pudo enviar. Probá de nuevo o escribinos a {APPLICATIONS_EMAIL}.
+        <p className="text-sm text-red-400">
+          No se pudo enviar. Intentá de nuevo o escribinos a {APPLICATIONS_EMAIL}.
         </p>
       )}
 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="mt-5 w-full rounded-lg bg-gold py-3.5 font-display text-base font-700 uppercase tracking-wide text-ink transition-transform hover:scale-[1.02] disabled:opacity-60"
+        className="mt-1 w-full rounded-[10px] bg-gold py-4 font-display text-[16px] font-700 uppercase tracking-[.04em] text-ink transition-all hover:-translate-y-0.5 disabled:opacity-60"
+        style={{ boxShadow: "0 14px 34px rgba(201,162,39,.3)" }}
       >
-        {status === "loading" ? "Enviando…" : "Quiero sumar mi empresa"}
+        {status === "loading" ? "Enviando…" : "Enviar consulta"}
       </button>
+      <p className="text-center text-[12px] text-white/40">
+        Sin compromiso. Te contactamos para explorar el match.
+      </p>
     </form>
   );
 }
