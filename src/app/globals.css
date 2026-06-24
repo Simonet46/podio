@@ -123,6 +123,19 @@
     animation: toastIn 0.4s cubic-bezier(0.16, 0.84, 0.44, 1);
   }
 
+  /* Marquee horizontal infinito (Apoyá a todos). */
+  @keyframes marqueeX {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    animation: marqueeX 36s linear infinite;
+    will-change: transform;
+  }
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
+
   /* Brillo deslizante en la barra de oro del pódium de hinchas. */
   @keyframes shineMove {
     0% { background-position: -120% 0; }
