@@ -43,6 +43,12 @@ export function Footer() {
             <Link href="/empresas" className="hover:text-white">
               Para empresas
             </Link>
+            <Link href="/privacidad" className="hover:text-white">
+              Política de Privacidad
+            </Link>
+            <Link href="/terminos" className="hover:text-white">
+              Términos y Condiciones
+            </Link>
           </nav>
         </div>
 

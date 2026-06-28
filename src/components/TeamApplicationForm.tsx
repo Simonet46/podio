@@ -9,6 +9,7 @@ import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 const inputCls =
   "w-full rounded-[10px] border border-white/[.14] bg-white/[.05] px-[15px] py-[13px] text-[15px] text-white outline-none placeholder:text-white/35 focus:border-white/40";
 const labelCls = "block text-[13px] font-500 text-white/60";
+const TERMS_VERSION = "2026-06-28";
 
 export function TeamApplicationForm() {
   const [equipo, setEquipo] = useState("");
@@ -20,6 +21,7 @@ export function TeamApplicationForm() {
   const [contacto, setContacto] = useState("");
   const [email, setEmail] = useState("");
   const [notas, setNotas] = useState("");
+  const [acepta, setAcepta] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
 
   const esOtro = deporte === "Otro";
@@ -28,7 +30,8 @@ export function TeamApplicationForm() {
     equipo.trim() &&
     email.trim() &&
     deporteEfectivo &&
-    (!esOtro || deporteOtro.trim());
+    (!esOtro || deporteOtro.trim()) &&
+    acepta;
 
   async function saveToSupabase(): Promise<boolean> {
     if (!isSupabaseConfigured) return false;
@@ -44,6 +47,9 @@ export function TeamApplicationForm() {
         contact_name: contacto || null,
         email,
         notes: notas || null,
+        accepted_terms: acepta,
+        accepted_at: new Date().toISOString(),
+        terms_version: TERMS_VERSION,
         status: "pending",
       });
       return !error;
@@ -262,6 +268,32 @@ export function TeamApplicationForm() {
           placeholder="Cantidad de jugadores, objetivo, qué necesitan…"
           className={`${inputCls} mt-[7px] resize-none leading-relaxed`}
         />
+      </div>
+
+      {/* Consentimiento legal */}
+      <div
+        className="mb-5 rounded-[12px] border border-white/[.1] p-[16px]"
+        style={{ background: "rgba(255,255,255,.03)" }}
+      >
+        <label className="flex cursor-pointer items-start gap-3">
+          <input
+            type="checkbox"
+            checked={acepta}
+            onChange={(e) => setAcepta(e.target.checked)}
+            className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#C9A227]"
+          />
+          <span className="text-[13px] leading-relaxed text-white/70">
+            En representación del equipo, leí y acepto la{" "}
+            <Link href="/privacidad" target="_blank" className="text-gold underline">
+              Política de Privacidad
+            </Link>{" "}
+            y los{" "}
+            <Link href="/terminos" target="_blank" className="text-gold underline">
+              Términos y Condiciones
+            </Link>{" "}
+            de {SITE.brand}, y cuento con autorización para postular al equipo.
+          </span>
+        </label>
       </div>
 
       {status === "error" && (

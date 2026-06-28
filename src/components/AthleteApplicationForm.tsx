@@ -9,6 +9,7 @@ import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
 type Step = 1 | 2 | 3 | 4 | 5; // 5 = done
 
 const MAX_BYTES = 5 * 1024 * 1024;
+const TERMS_VERSION = "2026-06-28";
 
 const STEP_LABELS = ["Datos", "Historia", "Fotos", "Revisión"];
 
@@ -47,8 +48,15 @@ export function AthleteApplicationForm() {
   const [actionPreview, setActionPreview] = useState<string | null>(null);
   const [fileMsg, setFileMsg] = useState("");
 
+  // Consentimiento legal
+  const [acepta, setAcepta] = useState(false);
+  const [aceptaTutor, setAceptaTutor] = useState(false);
+
   // Submit
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+
+  const esMenor = edad.trim() !== "" && Number(edad) < 18;
+  const consentimientoOk = acepta && (!esMenor || aceptaTutor);
 
   const sportObj = SPORT_LIST.find((s) => s.label === deporte);
   const sportColor = sportObj?.color ?? "#C9A227";
@@ -142,6 +150,11 @@ export function AthleteApplicationForm() {
         socials: instagram || null,
         payment_mp: mpAccount || null,
         payment_paypal: paypalAccount || null,
+        accepted_terms: acepta,
+        accepted_at: new Date().toISOString(),
+        terms_version: TERMS_VERSION,
+        image_consent: acepta,
+        is_minor_guardian: esMenor ? aceptaTutor : false,
         status: "pending",
       });
       return !error;
@@ -236,6 +249,8 @@ export function AthleteApplicationForm() {
     setActionFile(null);
     setPortraitPreview(null);
     setActionPreview(null);
+    setAcepta(false);
+    setAceptaTutor(false);
     setStatus("idle");
   }
 
@@ -734,6 +749,47 @@ export function AthleteApplicationForm() {
                 </p>
               </div>
 
+              {/* Consentimiento legal */}
+              <div
+                className="rounded-[12px] border border-white/[.1] p-[16px]"
+                style={{ background: "rgba(255,255,255,.03)" }}
+              >
+                <label className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={acepta}
+                    onChange={(e) => setAcepta(e.target.checked)}
+                    className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#C9A227]"
+                  />
+                  <span className="text-[13px] leading-relaxed text-white/70">
+                    Leí y acepto la{" "}
+                    <Link href="/privacidad" target="_blank" className="text-gold underline">
+                      Política de Privacidad
+                    </Link>{" "}
+                    y los{" "}
+                    <Link href="/terminos" target="_blank" className="text-gold underline">
+                      Términos y Condiciones
+                    </Link>
+                    , y autorizo el uso de mis fotos en mi perfil público de {SITE.brand}.
+                  </span>
+                </label>
+
+                {esMenor && (
+                  <label className="mt-3 flex cursor-pointer items-start gap-3 border-t border-white/[.08] pt-3">
+                    <input
+                      type="checkbox"
+                      checked={aceptaTutor}
+                      onChange={(e) => setAceptaTutor(e.target.checked)}
+                      className="mt-0.5 h-[18px] w-[18px] shrink-0 cursor-pointer accent-[#C9A227]"
+                    />
+                    <span className="text-[13px] leading-relaxed text-white/70">
+                      Soy menor de 18 y cuento con la autorización de mi madre, padre o
+                      tutor/a legal, que acepta estas condiciones en mi nombre.
+                    </span>
+                  </label>
+                )}
+              </div>
+
               {status === "error" && (
                 <p className="text-[13px]" style={{ color: "#DF0024" }}>
                   No se pudo enviar. Probá de nuevo o escribinos a{" "}
@@ -744,7 +800,7 @@ export function AthleteApplicationForm() {
               {ctaBtn(
                 status === "loading" ? "Enviando…" : "Enviar mi postulación",
                 handleSubmit,
-                status === "loading",
+                status === "loading" || !consentimientoOk,
               )}
             </div>
           </div>
