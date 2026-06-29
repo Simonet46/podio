@@ -96,8 +96,8 @@ type Draft = {
   socials: string;
   payment_mp: string;
   payment_paypal: string;
-  stats: [string, string][];
   fund_items: [string, string][];
+  supporter_message: string;
 };
 
 // ── Tokens del diseño (dark backoffice) ─────────────────────────────────
@@ -177,8 +177,8 @@ function buildDraft(app: Application): Draft {
     socials: app.socials ?? "",
     payment_mp: app.payment_mp ?? "",
     payment_paypal: app.payment_paypal ?? "",
-    stats: [["", ""], ["", ""], ["", ""]],
     fund_items: [["", ""], ["", ""], ["", ""]],
+    supporter_message: "",
   };
 }
 
@@ -380,7 +380,6 @@ export function BackofficeApp() {
       return;
     }
     setBusy(true);
-    const stats = draft.stats.filter(([v, l]) => v.trim() || l.trim());
     const fund = draft.fund_items.filter(([t, d]) => t.trim() || d.trim());
     const { data, error } = await supa
       .from("athletes")
@@ -403,8 +402,9 @@ export function BackofficeApp() {
         socials: draft.socials || null,
         payment_mp: draft.payment_mp || null,
         payment_paypal: draft.payment_paypal || null,
-        stats,
+        stats: [],
         fund_items: fund,
+        supporter_message: draft.supporter_message.trim() || null,
       })
       .select("id")
       .single();
@@ -1472,8 +1472,29 @@ function ApprovalModal({
           <DText label="Mercado Pago" value={draft.payment_mp} onChange={(v) => setDraft({ ...draft, payment_mp: v })} hint="Alias, CVU o email." />
           <DText label="PayPal" value={draft.payment_paypal} onChange={(v) => setDraft({ ...draft, payment_paypal: v })} hint="Email o link de PayPal.me." wide />
 
-          <DPairEditor title="Stats (valor / etiqueta)" rows={draft.stats} placeholders={["Valor (ej. #2)", "Etiqueta (ej. Ranking)"]} onChange={(stats) => setDraft({ ...draft, stats })} />
-          <DPairEditor title="Tu aporte financia (título / descripción)" rows={draft.fund_items} placeholders={["Título", "Descripción"]} onChange={(fund_items) => setDraft({ ...draft, fund_items })} />
+          <DPairEditor
+            title="Tu aporte financia (título / descripción)"
+            rows={draft.fund_items}
+            placeholders={[
+              ["Viajes", "Poder pagar mis pasajes de avión para ir al Mundial."],
+              ["Zapatillas", "Específicas de mi disciplina, cuestan 200 euros."],
+              ["Entrenador", "Pagar a mi cuerpo técnico para que me acompañe a competir."],
+            ]}
+            onChange={(fund_items) => setDraft({ ...draft, fund_items })}
+          />
+
+          <label className="block text-sm sm:col-span-2">
+            <span className="eyebrow" style={{ color: C.txtFaint }}>
+              Mensaje para aquellos que aporten a tu causa
+            </span>
+            <textarea
+              rows={3}
+              value={draft.supporter_message}
+              onChange={(e) => setDraft({ ...draft, supporter_message: e.target.value })}
+              style={{ ...inputDark, resize: "vertical" }}
+              placeholder="Ej: ¡Gracias por bancarme! Cada aporte me acerca un poco más a representar a la Argentina. Sos parte de esto."
+            />
+          </label>
         </div>
 
         <div className="mt-6 flex justify-end gap-3">
@@ -1679,17 +1700,19 @@ function DText({ label, value, onChange, required, wide, hint }: { label: string
   );
 }
 
-function DPairEditor({ title, rows, placeholders, onChange }: { title: string; rows: [string, string][]; placeholders: [string, string]; onChange: (rows: [string, string][]) => void }) {
+function DPairEditor({ title, rows, placeholders, onChange }: { title: string; rows: [string, string][]; placeholders: [string, string][]; onChange: (rows: [string, string][]) => void }) {
   return (
     <div className="sm:col-span-2">
       <span className="eyebrow" style={{ color: C.txtFaint }}>{title}</span>
       <div className="mt-1 space-y-2">
-        {rows.map((row, i) => (
+        {rows.map((row, i) => {
+          const ph = placeholders[i] ?? placeholders[placeholders.length - 1] ?? ["", ""];
+          return (
           <div key={i} className="flex gap-2">
             {[0, 1].map((j) => (
               <input
                 key={j}
-                placeholder={placeholders[j]}
+                placeholder={ph[j]}
                 value={row[j]}
                 onChange={(e) => {
                   const next = rows.map((r) => [...r]) as [string, string][];
@@ -1700,7 +1723,8 @@ function DPairEditor({ title, rows, placeholders, onChange }: { title: string; r
               />
             ))}
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
