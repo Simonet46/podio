@@ -282,20 +282,38 @@ export function AthleteApplicationForm() {
     setConnecting(true);
     // Abrir el popup en el mismo gesto del click (evita el bloqueador).
     const popup = window.open("", "granito-mp", "width=520,height=720");
+    // Escribirle algo: algunos navegadores cierran las ventanas "about:blank".
+    try {
+      popup?.document.write(
+        "<p style='font-family:system-ui,sans-serif;padding:24px;color:#333'>Conectando con Mercado Pago…</p>",
+      );
+    } catch {}
     try {
       const supabase = await getSupabase();
-      const { data } = await supabase!.functions.invoke("mp-app-connect-url", {
-        body: { connect_token: connectToken },
-      });
-      if (data?.url && popup) {
-        popup.location.href = data.url;
-      } else {
+      const { data, error } = await supabase!.functions.invoke(
+        "mp-app-connect-url",
+        { body: { connect_token: connectToken } },
+      );
+      const url = (data?.url as string | undefined) ?? undefined;
+      if (error || !url) {
         popup?.close();
         setConnecting(false);
+        alert(
+          "No se pudo iniciar la conexión con Mercado Pago.\n" +
+            (error?.message || JSON.stringify(data) || "sin URL"),
+        );
+        return;
       }
-    } catch {
+      if (popup && !popup.closed) {
+        popup.location.href = url;
+      } else {
+        // Popup bloqueado → redirección completa como fallback.
+        window.location.href = url;
+      }
+    } catch (e) {
       popup?.close();
       setConnecting(false);
+      alert("Error al conectar: " + (e instanceof Error ? e.message : String(e)));
     }
   }
 
