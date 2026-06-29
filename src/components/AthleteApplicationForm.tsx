@@ -164,7 +164,14 @@ export function AthleteApplicationForm() {
       if (!supabase) return null;
       const nextComp =
         [competencia, fecha].filter(Boolean).join(" · ") || null;
+      // Generamos el id en el navegador: el usuario anónimo puede INSERTAR pero
+      // no LEER postulaciones, así que no podemos usar .select() para recuperarlo.
+      const id =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : connectToken;
       const payload = {
+        id,
         full_name: nombre,
         sport: deporteEfectivo,
         discipline: esAtletismo ? disciplina || null : null,
@@ -186,12 +193,10 @@ export function AthleteApplicationForm() {
         is_minor_guardian: esMenor ? aceptaTutor : false,
         status: "pending",
       };
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("athlete_applications")
-        .insert(payload)
-        .select("id")
-        .single();
-      return error ? null : (data?.id ?? null);
+        .insert(payload);
+      return error ? null : id;
     } catch {
       return null;
     }
