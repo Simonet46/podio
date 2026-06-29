@@ -1,36 +1,30 @@
 // Edge Function: mp-app-connect-url
-// La llama el FORM de postulación (público) después de enviar, para que el
-// atleta conecte su Mercado Pago como parte del registro. Verifica que la
-// postulación exista y esté pendiente, firma un `state` con el application_id
-// y devuelve la URL de autorización de MP.
+// La llama el FORM de postulación (público) para que el atleta conecte su MP
+// durante el registro, ANTES de enviar. Recibe un `connect_token` (código de
+// sesión que generó el navegador) y firma un `state` con él. El token de MP
+// queda "en tránsito" en pending_mp_connections hasta que el form lo reclame.
 //
-// Secrets: MP_CLIENT_ID, MP_REDIRECT_URI, STATE_SECRET, SUPABASE_SERVICE_ROLE_KEY.
+// Secrets: MP_CLIENT_ID, MP_REDIRECT_URI, STATE_SECRET.
 // Deploy con --no-verify-jwt (lo llama el sitio público).
-import { cors, json, signState, serviceClient } from "../_shared/util.ts";
+import { cors, json, signState } from "../_shared/util.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
   if (req.method !== "POST") return json({ error: "Método no permitido" }, 405);
 
-  const { application_id } = await req.json().catch(() => ({}));
-  if (!application_id) return json({ error: "Falta application_id." }, 400);
-
-  // Anti-abuso básico: la postulación tiene que existir y estar pendiente.
-  const supa = serviceClient();
-  const { data: app } = await supa
-    .from("athlete_applications")
-    .select("id, status")
-    .eq("id", application_id)
-    .single();
-  if (!app) return json({ error: "Postulación no encontrada." }, 404);
-  if (app.status !== "pending" && app.status !== "draft") {
-    return json({ error: "Esta postulación ya no admite conexión." }, 409);
+  const { connect_token } = await req.json().catch(() => ({}));
+  // UUID v4 simple validation.
+  if (
+    typeof connect_token !== "string" ||
+    !/^[0-9a-f-]{32,40}$/i.test(connect_token)
+  ) {
+    return json({ error: "connect_token inválido." }, 400);
   }
 
   const state = await signState({
-    application_id,
+    connect_token,
     kind: "mp-connect-app",
-    exp: Date.now() + 1000 * 60 * 60 * 24 * 3, // 3 días
+    exp: Date.now() + 1000 * 60 * 30, // 30 min (el form está abierto)
   });
 
   const clientId = (Deno.env.get("MP_CLIENT_ID") ?? "").trim();

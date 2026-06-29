@@ -19,7 +19,7 @@ Deno.serve(async (req) => {
 
   const payload = await verifyState<{
     athlete_id?: string;
-    application_id?: string;
+    connect_token?: string;
     kind: string;
   }>(state);
   const okKind =
@@ -72,17 +72,16 @@ Deno.serve(async (req) => {
   const supa = serviceClient();
 
   if (isApp) {
+    // Conexión durante el registro: el token queda "en tránsito" atado al
+    // connect_token (el form lo reclama al enviar la postulación).
+    const { updated_at: _omit, ...pendRow } = row;
     const { error } = await supa
-      .from("application_mp_accounts")
-      .upsert({ application_id: payload.application_id, ...row });
+      .from("pending_mp_connections")
+      .upsert({ connect_token: payload.connect_token, ...pendRow });
     if (error) {
-      console.error("No se pudo guardar el token (app):", error.message);
+      console.error("No se pudo guardar el token (pending):", error.message);
       return redirect(errTarget("db:" + error.message.slice(0, 150)));
     }
-    await supa
-      .from("athlete_applications")
-      .update({ mp_connected: true })
-      .eq("id", payload.application_id);
     return redirect(okTarget);
   }
 

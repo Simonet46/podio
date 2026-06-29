@@ -54,9 +54,23 @@ export function AthleteApplicationForm() {
 
   // Submit
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [appId, setAppId] = useState<string | null>(null); // id de la postulación creada
   const [connecting, setConnecting] = useState(false); // conexión MP en curso
   const [mpConnected, setMpConnected] = useState(false); // ✓ MP conectado
+  // Código de sesión para la conexión MP "en tránsito" (se genera una vez).
+  const [connectToken] = useState<string>(() => {
+    try {
+      if (typeof crypto !== "undefined" && crypto.randomUUID) {
+        return crypto.randomUUID();
+      }
+      const a = new Uint8Array(16);
+      crypto.getRandomValues(a);
+      return Array.from(a)
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+    } catch {
+      return "00000000000000000000000000000000";
+    }
+  });
 
   // El popup de conexión avisa por postMessage cuando termina.
   useEffect(() => {
@@ -172,15 +186,6 @@ export function AthleteApplicationForm() {
         is_minor_guardian: esMenor ? aceptaTutor : false,
         status: "pending",
       };
-      // Si ya hay un borrador (porque conectó MP durante el registro), lo
-      // completamos; si no, creamos la postulación.
-      if (appId) {
-        const { error } = await supabase
-          .from("athlete_applications")
-          .update(payload)
-          .eq("id", appId);
-        return error ? null : appId;
-      }
       const { data, error } = await supabase
         .from("athlete_applications")
         .insert(payload)
@@ -246,7 +251,15 @@ export function AthleteApplicationForm() {
     const photos = await uploadPhotos();
     const newId = await saveToSupabase(photos);
     if (newId) {
-      setAppId(newId);
+      // Si conectó MP durante el registro, vinculamos el token a la postulación.
+      if (mpConnected) {
+        try {
+          const supabase = await getSupabase();
+          await supabase?.functions.invoke("mp-claim-pending", {
+            body: { application_id: newId, connect_token: connectToken },
+          });
+        } catch {}
+      }
       if (WEB3FORMS_ACCESS_KEY) void notifyByEmail(photos);
       go(5);
       return;
@@ -259,41 +272,10 @@ export function AthleteApplicationForm() {
     }
   }
 
-  /** Crea un borrador de la postulación (status "draft") y devuelve su id. */
-  async function createDraft(): Promise<string | null> {
-    if (!isSupabaseConfigured) return null;
-    try {
-      const supabase = await getSupabase();
-      if (!supabase) return null;
-      const nextComp =
-        [competencia, fecha].filter(Boolean).join(" · ") || null;
-      const { data, error } = await supabase
-        .from("athlete_applications")
-        .insert({
-          full_name: nombre || "(sin nombre)",
-          sport: deporteEfectivo || "(sin deporte)",
-          discipline: esAtletismo ? disciplina || null : null,
-          location: ciudad || null,
-          email: email || "pendiente@granito.local",
-          age: edad ? Number(edad) : null,
-          next_competition: nextComp,
-          achievements: frase || null,
-          needs: historia || null,
-          socials: instagram || null,
-          payment_paypal: paypalAccount || null,
-          status: "draft",
-        })
-        .select("id")
-        .single();
-      return error ? null : (data?.id ?? null);
-    } catch {
-      return null;
-    }
-  }
-
   /**
    * Conecta el Mercado Pago del atleta SIN salir del formulario: abre un popup
-   * con la autorización de MP; al volver, /mp-listo avisa por postMessage.
+   * con la autorización de MP. El token queda "en tránsito" atado al
+   * connectToken; al enviar la postulación se vincula (mp-claim-pending).
    */
   async function connectMP() {
     if (connecting || mpConnected) return;
@@ -301,19 +283,9 @@ export function AthleteApplicationForm() {
     // Abrir el popup en el mismo gesto del click (evita el bloqueador).
     const popup = window.open("", "granito-mp", "width=520,height=720");
     try {
-      let id = appId;
-      if (!id) {
-        id = await createDraft();
-        if (id) setAppId(id);
-      }
-      if (!id) {
-        popup?.close();
-        setConnecting(false);
-        return;
-      }
       const supabase = await getSupabase();
       const { data } = await supabase!.functions.invoke("mp-app-connect-url", {
-        body: { application_id: id },
+        body: { connect_token: connectToken },
       });
       if (data?.url && popup) {
         popup.location.href = data.url;
@@ -350,7 +322,6 @@ export function AthleteApplicationForm() {
     setAcepta(false);
     setAceptaTutor(false);
     setStatus("idle");
-    setAppId(null);
     setConnecting(false);
     setMpConnected(false);
   }
@@ -436,31 +407,15 @@ export function AthleteApplicationForm() {
           >
             ✓ Tu Mercado Pago quedó conectado
           </div>
-        ) : appId ? (
+        ) : (
           <div
-            className="mx-auto mt-7 max-w-[460px] rounded-[14px] p-5 text-left"
-            style={{ background: "#0d2238", border: "1px solid rgba(0,158,227,.4)" }}
+            className="mx-auto mt-7 max-w-[460px] rounded-[12px] p-4 text-[13px] leading-relaxed text-white/60"
+            style={{ background: "#0d2238", border: "1px solid rgba(255,255,255,.08)" }}
           >
-            <div className="font-display text-[18px] font-600 uppercase leading-none text-white">
-              Conectá tu Mercado Pago
-            </div>
-            <p className="mt-2 text-[14px] leading-relaxed text-white/65">
-              Para recibir los aportes directo en tu cuenta (el 93% es tuyo),
-              conectá tu Mercado Pago con tu propia cuenta. Toma 30 segundos.
-            </p>
-            <button
-              onClick={connectMP}
-              disabled={connecting}
-              className="mt-4 w-full cursor-pointer rounded-[10px] border-0 py-[14px] font-display text-[15px] font-700 uppercase tracking-wide text-white transition-all hover:-translate-y-0.5 disabled:opacity-60"
-              style={{ background: "#009ee3", boxShadow: "0 12px 28px rgba(0,158,227,.3)" }}
-            >
-              {connecting ? "Abriendo Mercado Pago…" : "Conectar Mercado Pago"}
-            </button>
-            <p className="mt-2.5 text-center text-[12px] text-white/40">
-              Si preferís lo hacés más adelante — pero sin esto no podés recibir aportes.
-            </p>
+            No conectaste tu Mercado Pago. No pasa nada: cuando aprobemos tu
+            postulación te mandamos un link para conectarlo y recibir los aportes.
           </div>
-        ) : null}
+        )}
 
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <button
